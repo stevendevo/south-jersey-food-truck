@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="470" height="92" viewBox="0 0 470 92" role="img" aria-labelledby="title">
+  <title id="title">South Jersey Food Truck</title>
+  <rect x="2.5" y="2.5" width="87" height="87" rx="22.5" fill="#0B1020" stroke="#76E4F7" stroke-opacity=".72" stroke-width="1"/>
+  <path d="M27 27c-3-4 3-6 0-10M40 26c-3-4 3-6 0-10M53 27c-3-4 3-6 0-10" fill="none" stroke="#D7F36B" stroke-linecap="round" stroke-width="2.5"/>
+  <path d="M18 30h38l-3.1 6.7H16.3L18 30Z" fill="#D7F36B"/>
+  <path d="M23 30v6.5m9.5-6.5v6.5m9.5-6.5v6.5m9.5-6.5v6.5" fill="none" stroke="#0B1020" stroke-linecap="round" stroke-width="1.4"/>
+  <path d="M18 39a4 4 0 0 1 4-4h34v27H16V41a2 2 0 0 1 2-2Z" fill="#FF5C35"/>
+  <path d="M56 41h10.8c1.2 0 2.4.5 3.2 1.4l8.8 9.6V62H56V41Z" fill="#FF5C35"/>
+  <path d="M60 45h5.7l6.6 6.6H60V45Z" fill="#76E4F7"/>
+  <path d="M22 41h27v13H22z" fill="#0B1020"/>
+  <path d="M26 44h19v7H26z" fill="#76E4F7"/>
+  <path d="M49 41h4v21h-4z" fill="#E94421"/>
+  <circle cx="28" cy="63" r="6.7" fill="#F7F8FA"/>
+  <circle cx="65" cy="63" r="6.7" fill="#F7F8FA"/>
+  <circle cx="28" cy="63" r="2.9" fill="#0B1020"/>
+  <circle cx="65" cy="63" r="2.9" fill="#0B1020"/>
+  <path d="M12 77h66" stroke="#D7F36B" stroke-linecap="round" stroke-width="3.2"/>
+  <path d="M21 77h8m7 0h8m7 0h8m7 0h8" stroke="#0B1020" stroke-linecap="round" stroke-width="1.4"/>
+  <text x="106" y="39" fill="#F7F8FA" font-family="Space Grotesk, Arial, sans-serif" font-size="32" font-weight="700" letter-spacing="-1.15">SOUTH JERSEY</text>
+  <text x="108" y="68" fill="#FF7654" font-family="Space Grotesk, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="3.1">FOOD TRUCK</text>
+</svg>

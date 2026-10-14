@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title id="title">South Jersey Food Truck mark</title>
+  <rect x="3.75" y="3.75" width="88.5" height="88.5" rx="22.5" fill="#0B1020" stroke="#76E4F7" stroke-opacity=".72" stroke-width="1.5"/>
+  <path d="M28 28c-3-4 3-6 0-10M42 27c-3-4 3-6 0-10M56 28c-3-4 3-6 0-10" fill="none" stroke="#D7F36B" stroke-linecap="round" stroke-width="2.6"/>
+  <path d="M19 31h40l-3.3 7H17.2l1.8-7Z" fill="#D7F36B"/>
+  <path d="M24 31v6.8m10-6.8v6.8m10-6.8v6.8m10-6.8v6.8" fill="none" stroke="#0B1020" stroke-linecap="round" stroke-width="1.5"/>
+  <path d="M19 41a4 4 0 0 1 4-4h36v28H17V43a2 2 0 0 1 2-2Z" fill="#FF5C35"/>
+  <path d="M59 43h11.4c1.3 0 2.5.5 3.4 1.5l9.2 10.1V65H59V43Z" fill="#FF5C35"/>
+  <path d="M63 47h6.1l6.9 7H63v-7Z" fill="#76E4F7"/>
+  <path d="M23 43h29v14H23z" fill="#0B1020"/>
+  <path d="M27 46h21v8H27z" fill="#76E4F7"/>
+  <path d="M52 43h4v22h-4z" fill="#E94421"/>
+  <circle cx="30" cy="66" r="7.1" fill="#F7F8FA"/>
+  <circle cx="69" cy="66" r="7.1" fill="#F7F8FA"/>
+  <circle cx="30" cy="66" r="3.1" fill="#0B1020"/>
+  <circle cx="69" cy="66" r="3.1" fill="#0B1020"/>
+  <path d="M13 81h70" stroke="#D7F36B" stroke-linecap="round" stroke-width="3.5"/>
+  <path d="M23 81h8m8 0h8m8 0h8m8 0h8" stroke="#0B1020" stroke-linecap="round" stroke-width="1.5"/>
+</svg>

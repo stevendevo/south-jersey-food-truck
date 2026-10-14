@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://southjerseyfoodtruck.com/sitemap.xml
+
+# Blog update feed
+https://southjerseyfoodtruck.com/blog.xml

@@ -1,0 +1,26 @@
+{
+  "name": "south-jersey-food-truck",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SouthJerseyFoodTruck.com — South Jersey food truck directory, guides, and event inquiries",
+  "type": "commonjs",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "test": "node scripts/validate-publish.js",
+    "validate:directory": "node scripts/validate-directory.js",
+    "validate:county-cuisines": "node scripts/validate-county-cuisines.js",
+    "validate:cross-county": "node scripts/validate-cross-county.js",
+    "validate:seo": "node scripts/validate-seo.js",
+    "validate:contact-delivery": "node scripts/validate-contact-delivery.js",
+    "validate:sources": "node scripts/validate-sources.js",
+    "validate:assistant": "node scripts/validate-assistant.js",
+    "validate:publish": "node scripts/validate-publish.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2",
+    "openai": "^7.12.1",
+    "resend": "^6.12.3"
+  }
+}
