@@ -1,5 +1,11 @@
 'use strict';
 
+const optimizedImages = require('./public/optimized/manifest.json');
+
+function imageAsset(source) {
+  return optimizedImages[source] || { url: source };
+}
+
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;')
@@ -62,7 +68,9 @@ function inlineMd(text) {
 }
 
 function hasVerifiedTruckImage(truck) {
-  return Boolean(truck?.image_url) && !truck.image_url.startsWith('/seed/cat_');
+  const url = truck?.image_url;
+  return typeof url === 'string' && !url.startsWith('/seed/cat_')
+    && (/^\/(?!\/)/.test(url) || /^https:\/\//i.test(url));
 }
 
 function truckImageAlt(truck, context = '') {
@@ -72,8 +80,10 @@ function truckImageAlt(truck, context = '') {
 
 function renderTruckImage(truck, { className = 'truck-card-img', wrapperClass = '', width = 400, height = 175, loading = 'lazy', context = '' } = {}) {
   if (hasVerifiedTruckImage(truck)) {
-    const assetLabel = /logo/i.test(truck.image_asset_type || '') ? 'Official logo' : 'Verified truck photo';
-    return `<div class="truck-image-frame"><img class="${esc(className)}" src="${esc(truck.image_url)}" alt="${esc(truckImageAlt(truck, context))}" loading="${esc(loading)}" width="${width}" height="${height}" /><span class="truck-image-label">${assetLabel}</span></div>`;
+    const asset = imageAsset(truck.image_url);
+    const assetLabel = /logo/i.test(truck.image_asset_type || '') ? 'Official logo'
+      : truck.image_verified_at ? 'Reviewed truck photo' : 'Listing image';
+    return `<div class="truck-image-frame"><img class="${esc(className)}" src="${esc(asset.url)}" alt="${esc(truckImageAlt(truck, context))}" loading="${esc(loading)}" decoding="async"${loading === 'eager' ? ' fetchpriority="high"' : ''} width="${asset.width || width}" height="${asset.height || height}" /><span class="truck-image-label">${assetLabel}</span></div>`;
   }
 
   return `<div class="${esc(className)} truck-brand-fallback ${esc(wrapperClass)}" role="img" aria-label="${esc(`${truck.name}: official image pending verification`)}">
@@ -83,4 +93,4 @@ function renderTruckImage(truck, { className = 'truck-card-img', wrapperClass = 
   </div>`;
 }
 
-module.exports = { esc, formatDate, formatDateShort, seoDescription, renderMarkdown, hasVerifiedTruckImage, renderTruckImage, truckImageAlt };
+module.exports = { esc, formatDate, formatDateShort, seoDescription, renderMarkdown, hasVerifiedTruckImage, renderTruckImage, truckImageAlt, imageAsset };

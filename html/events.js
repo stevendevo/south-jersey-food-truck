@@ -1,6 +1,7 @@
 'use strict';
 const layout = require('./layout');
-const { esc, formatDateShort } = require('../utils');
+const { COUNTY_SLUGS } = require('../taxonomy');
+const { esc, formatDateShort, imageAsset } = require('../utils');
 
 const SECTIONS = [
   {
@@ -34,8 +35,9 @@ const SECTIONS = [
 ];
 
 function articleCard(post) {
+  const image = imageAsset(post.cover_image_url || '/seed/blog_summer_guide.png');
   return `<a href="/blog/${esc(post.slug)}" class="blog-card">
-    <img class="blog-card-img" src="${esc(post.cover_image_url || '/seed/blog_summer_guide.png')}" alt="${esc(post.cover_image_alt || post.title)}" loading="lazy" width="400" height="195" />
+    <img class="blog-card-img" src="${esc(image.url)}" alt="${esc(post.cover_image_alt || post.title)}" loading="lazy" width="${image.width || 400}" height="${image.height || 195}" />
     <div class="blog-card-body">
       <div class="blog-card-meta">${formatDateShort(post.published_at)} &middot; ${esc(post.author)}</div>
       <div class="blog-card-title">${esc(post.title)}</div>
@@ -45,6 +47,7 @@ function articleCard(post) {
 }
 
 module.exports = function eventsPage({ posts = [], trucks = [] } = {}) {
+  const localTotal = trucks.filter(truck => Object.values(COUNTY_SLUGS).includes(truck.area)).length;
   const postBySlug = new Map(posts.map(post => [post.slug, post]));
   const sections = SECTIONS.map(section => ({
     ...section,
@@ -76,7 +79,7 @@ module.exports = function eventsPage({ posts = [], trucks = [] } = {}) {
 <div class="container" style="padding-top:3rem;padding-bottom:5rem;">
   <span class="section-label">Plan by Occasion</span>
   <h1>South Jersey Food Truck Event Guides</h1>
-  <p style="max-width:760px;line-height:1.8;"><strong>South Jersey food truck event planning starts with the occasion, guest flow, and season.</strong> Use these local guides to plan weddings, corporate gatherings, school events, graduations, farmers markets, festivals, and shore-season celebrations. The directory currently includes ${trucks.length} listed trucks across seven counties.</p>
+  <p style="max-width:760px;line-height:1.8;"><strong>South Jersey food truck event planning starts with the occasion, guest flow, and season.</strong> Use these local guides to plan weddings, corporate gatherings, school events, graduations, farmers markets, festivals, and shore-season celebrations. The directory currently includes ${trucks.length} records: ${localTotal} assigned to the seven South Jersey counties and ${trucks.length - localTotal} assigned elsewhere.</p>
   <p style="color:var(--muted);max-width:760px;">These guides are planning resources, not endorsements or availability guarantees. Confirm menus, pricing, travel radius, permits, and dates directly with each operator.</p>
 
   ${sections.map(section => `

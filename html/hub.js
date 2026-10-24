@@ -1,42 +1,43 @@
 'use strict';
 const layout = require('./layout');
+const { truckEntity } = require('./truck-entity');
 const { esc, renderTruckImage } = require('../utils');
 
 const COUNTY_DATA = [
   {
     slug: 'camden-county',
     name: 'Camden County',
-    desc: 'The most active food truck county in South Jersey. Collingswood\'s year-round Saturday farmers market runs six to eight trucks weekly, and Cherry Hill\'s commercial corridors host rotating lunch circuits five days a week. Haddonfield, Voorhees, and Moorestown add weekend foot traffic and private event demand that keeps trucks busy from spring through late fall. Camden County is where to look for cheesesteaks, wood-fired pizza, artisan tacos, and gourmet grilled cheese.'
+    desc: 'Compare directory records based in Camden County, including Cherry Hill, Collingswood, and nearby communities. Use each profile to research cuisine and available operator links, then confirm current event coverage.'
   },
   {
     slug: 'burlington-county',
     name: 'Burlington County',
-    desc: 'Burlington County\'s truck scene runs deep through Moorestown, Medford, and Mount Holly farmers markets and a strong outdoor events calendar. BBQ, mini donuts, Neapolitan pizza, and American comfort food dominate a county that has embraced the truck format for everything from corporate lunches to backyard weddings. The Moorestown and Medford market circuits are anchor stops for the region\'s best operators.'
+    desc: 'Browse Burlington County directory records and compare cuisines for an event or a public food stop. A recorded base in this county does not guarantee a truck is available at your venue or on your date.'
   },
   {
     slug: 'gloucester-county',
     name: 'Gloucester County',
-    desc: 'Gloucester County\'s truck culture is anchored by Rowan University\'s presence in Glassboro and a lively community events calendar in Woodbury, Deptford, and Washington Township. The county punches above its weight in culinary diversity — hot dog trucks, Korean-Jersey fusion, specialty coffee, and fusion BBQ-taco concepts all have dedicated followings here.'
+    desc: 'Explore directory records assigned to Gloucester County. Start with cuisine and home-base details, then ask operators about service capacity, travel, menus, and date availability.'
   },
   {
     slug: 'atlantic-county',
     name: 'Atlantic County',
-    desc: 'Atlantic County\'s hospitality infrastructure — built around Atlantic City\'s hotel, casino, and convention industry — has produced professional food truck operators who know how to feed large crowds. Galloway, Egg Harbor Township, and the Atlantic City boardwalk corridor support smash burgers, empanadas, specialty cupcakes, seafood, and more. Summer festival season here is one of the most active in South Jersey.'
+    desc: 'Research directory records assigned to Atlantic County and compare options for your event. Confirm current schedules and venue requirements directly with the operator and event organizer.'
   },
   {
     slug: 'cape-may-county',
     name: 'Cape May County',
-    desc: 'The shore food truck capital of South Jersey. From the Wildwood boardwalk to Stone Harbor farmers markets and the Victorian resort blocks of Cape May City, mobile kitchens run Memorial Day through Labor Day serving one of the highest-traffic tourism regions on the East Coast. Asian BBQ, Thai-Mexican fusion, dumplings, lobster, and shore-style tacos define a scene that runs at full speed all summer long.'
+    desc: 'Browse the Cape May County records for shore-area food truck research. Seasonal schedules, service locations, travel fees, and event availability need direct confirmation.'
   },
   {
     slug: 'cumberland-county',
     name: 'Cumberland County',
-    desc: 'Cumberland County\'s truck scene reflects the county\'s agricultural character and cultural diversity. Millville, Vineland, and Bridgeton host Indian curries, award-winning cupcakes, gourmet catering, and BBQ built around local farms and produce. The county\'s trucks are known for generous portions, honest prices, and accommodating diverse dietary needs — making them strong choices for multicultural community events.'
+    desc: 'Compare directory records assigned to Cumberland County. Profiles provide the details recorded for each operator and a place to report missing or outdated information.'
   },
   {
     slug: 'salem-county',
     name: 'Salem County',
-    desc: 'Salem County is South Jersey\'s most rural county and its food truck scene reflects that in the best way — farm-to-truck sourcing, community-rooted events, and operators who build genuine local relationships. Penns Grove, Salem City, and Woodstown see rotating truck appearances at community events and local markets, with operators drawing on the county\'s agricultural base for ingredients.'
+    desc: 'Check the current Salem County listing count below. A zero count means this directory has no records assigned to the county; it does not mean no food trucks operate there.'
   },
 ];
 
@@ -50,15 +51,15 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
   const faqs = [
     {
       q: 'How do I find food trucks in South Jersey near me?',
-      a: 'Use the directory and filter by county to narrow results to your area. Each listing includes the truck\'s home base city and the county it primarily serves. Most trucks will travel 30–60 miles for private events, so a Burlington County truck may well serve your Camden County event.'
+      a: 'Use the directory and filter by county to narrow results to your area. Each listing shows the recorded home base or county. Home base does not establish a service radius: ask the operator whether they travel to your venue and whether travel fees apply.'
     },
     {
       q: 'How far in advance should I hire a food truck in South Jersey?',
-      a: 'For weddings and weekend summer events, aim for 12–16 weeks in advance — the best trucks fill their calendars quickly between May and September. For weekday corporate lunches or off-season gatherings, 4–6 weeks is usually enough. Always confirm availability early for holiday weekends.'
+      a: 'Contact operators as soon as you have a date, venue, estimated guest count, and service window. Lead times vary by operator and season; request written confirmation rather than assuming a truck is available.'
     },
     {
       q: 'What does it cost to hire a food truck in South Jersey?',
-      a: 'Most food trucks in South Jersey charge a guaranteed minimum — typically $500–$1,500 depending on the truck and event type — then bill per guest or per hour beyond that. High-end catering trucks or specialty options like lobster may run higher. Many trucks offer all-inclusive flat rates for private events; ask directly for a custom quote.'
+      a: 'There is no directory-wide price. Ask each operator for an event-specific written quote covering the menu, guest count, service window, minimum spend, travel, taxes, gratuity, deposit, and cancellation terms.'
     },
   ];
 
@@ -66,60 +67,26 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
     '@context': 'https://schema.org',
     '@graph': [
       {
-        '@type': 'LocalBusiness',
-        '@id': 'https://southjerseyfoodtruck.com/#organization',
-        name: 'South Jersey Food Truck',
-        url: 'https://southjerseyfoodtruck.com',
-        description: `South Jersey's largest food truck directory — find and hire ${total}+ food trucks across Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem counties.`,
-        areaServed: [
-          { '@type': 'AdministrativeArea', name: 'Camden County, NJ' },
-          { '@type': 'AdministrativeArea', name: 'Burlington County, NJ' },
-          { '@type': 'AdministrativeArea', name: 'Gloucester County, NJ' },
-          { '@type': 'AdministrativeArea', name: 'Atlantic County, NJ' },
-          { '@type': 'AdministrativeArea', name: 'Cape May County, NJ' },
-          { '@type': 'AdministrativeArea', name: 'Cumberland County, NJ' },
-          { '@type': 'AdministrativeArea', name: 'Salem County, NJ' }
-        ],
-        address: {
-          '@type': 'PostalAddress',
-          addressRegion: 'NJ',
-          addressCountry: 'US'
-        }
-      },
-      {
-        '@type': 'WebPage',
+        '@type': 'ItemList',
         '@id': 'https://southjerseyfoodtruck.com/food-trucks-in-south-jersey#guide',
-        name: 'Food Trucks in South Jersey — The Complete Guide',
-        url: 'https://southjerseyfoodtruck.com/food-trucks-in-south-jersey',
-        description: `The complete guide to food trucks in South Jersey: all 7 counties, top cuisines, how to hire or rent a truck, and a directory of ${total}+ operators.`,
-        breadcrumb: {
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://southjerseyfoodtruck.com' },
-            { '@type': 'ListItem', position: 2, name: 'Food Trucks in South Jersey', item: 'https://southjerseyfoodtruck.com/food-trucks-in-south-jersey' }
-          ]
-        }
+        name: 'South Jersey county food truck directories',
+        numberOfItems: COUNTY_DATA.length,
+        itemListElement: COUNTY_DATA.map((county, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: `${county.name} Food Trucks`,
+          url: `https://southjerseyfoodtruck.com/${county.slug}-food-trucks`
+        }))
       },
       ...(featured.length > 0 ? [{
         '@type': 'ItemList',
         name: 'Featured Food Trucks in South Jersey',
-        description: 'A selection of standout South Jersey food trucks available for private events and catering.',
+        description: 'Featured placement from the directory. Confirm service area and availability with each operator.',
         numberOfItems: featured.length,
         itemListElement: featured.map((t, i) => ({
           '@type': 'ListItem',
           position: i + 1,
-          item: {
-            '@type': 'FoodEstablishment',
-            name: t.name,
-            url: `https://southjerseyfoodtruck.com/trucks/${t.slug}`,
-            servesCuisine: t.cuisine,
-            address: {
-              '@type': 'PostalAddress',
-              addressLocality: t.city,
-              addressRegion: 'NJ',
-              addressCountry: 'US'
-            }
-          }
+          item: truckEntity(t)
         }))
       }] : []),
       {
@@ -143,7 +110,7 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
       <span>Food Trucks in South Jersey</span>
     </nav>
     <h1 style="color:#fff;margin-bottom:0.75rem;">Food Trucks in South Jersey</h1>
-    <p style="font-size:1.15rem;opacity:0.92;max-width:680px;line-height:1.7;">The complete guide to finding, booking, and hiring food trucks across all seven South Jersey counties. Browse ${total}+ operators serving Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem.</p>
+    <p style="font-size:1.15rem;opacity:0.92;max-width:680px;line-height:1.7;">A guide to researching food trucks across the seven-county South Jersey region. Browse ${total} directory records in South Jersey and nearby areas; confirm service coverage and availability with each operator.</p>
     <div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
       <a href="/directory" class="btn btn-white">Browse the Directory &rarr;</a>
       <a href="/contact" class="btn btn-outline" style="border-color:rgba(255,255,255,0.6);color:#fff;">Hire a Truck</a>
@@ -173,8 +140,8 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
 
   <section style="margin-bottom:3rem;">
     <h2>What Are South Jersey Food Trucks?</h2>
-    <p style="line-height:1.8;color:var(--text);margin-bottom:1rem;">Food trucks in South Jersey are professional, fully licensed mobile food operations that serve at farmers markets, festivals, corporate events, private parties, and street locations across the seven-county region. Unlike traditional restaurants, they move where demand is — which means the best operators appear at a farmers market in Collingswood on Saturday morning, a corporate park in Cherry Hill for lunch on Tuesday, and a wedding in Cape May on Saturday evening.</p>
-    <p style="line-height:1.8;color:var(--text);margin-bottom:1rem;">South Jersey's food truck scene has matured significantly over the past decade. What began as a category dominated by hot dog carts and cheesesteak trucks has expanded into a diverse market of artisan operators — certified Neapolitan pizza, authentic al pastor carved off a trompo, Texas-style BBQ smoked 14 hours on a 1,000-gallon offset smoker, fresh Maine lobster rolls, and gourmet desserts baked fresh every morning. The standard has risen dramatically, and the best food trucks in South Jersey compete seriously with fixed-location restaurants.</p>
+    <p style="line-height:1.8;color:var(--text);margin-bottom:1rem;">Food trucks are mobile food businesses that may serve at public events, markets, workplaces, and private venues. The directory organizes records by home base and cuisine. A listing is not a live schedule or evidence that an operator holds the permits required for a particular event.</p>
+    <p style="line-height:1.8;color:var(--text);margin-bottom:1rem;">Use the county and cuisine pages below to build a shortlist. Before booking, confirm the menu, dietary accommodations, service capacity, insurance, permits, travel, and date availability with the operator. See our <a href="/about#editorial-policy">listing and editorial policy</a> for the limits of recorded checks and featured placement.</p>
     <p style="line-height:1.8;color:var(--text);">The region's proximity to Philadelphia, its agricultural base in Cumberland and Salem counties, its tourism corridor in Cape May County, and its dense suburban population in Camden and Burlington counties together create a market that supports operators at every price point and cuisine category.</p>
   </section>
 
@@ -297,17 +264,17 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
     <p style="line-height:1.8;color:var(--text);margin-bottom:1rem;">Hiring a food truck in South Jersey is more straightforward than most people expect. Here's the process:</p>
     <ol style="line-height:1.9;color:var(--text);padding-left:1.5rem;margin-bottom:1rem;">
       <li style="margin-bottom:0.75rem;"><strong>Browse by county or cuisine.</strong> Use the <a href="/directory">directory</a> to find trucks that operate in your area and serve the style of food you want. Filter by county to see operators near you.</li>
-      <li style="margin-bottom:0.75rem;"><strong>Check the listing for contact details.</strong> Each truck listing includes phone numbers, websites, and Instagram handles. Most operators prefer Instagram DMs or contact forms on their own websites for event inquiries.</li>
+      <li style="margin-bottom:0.75rem;"><strong>Check the listing for contact details.</strong> Open the profile for operator links where recorded. Some listings have no direct contact details; use the correction link if you can supply an official source.</li>
       <li style="margin-bottom:0.75rem;"><strong>Reach out with event specifics.</strong> When you contact a truck, include your event date, location, expected guest count, and time window. This lets operators respond with accurate availability and pricing.</li>
       <li style="margin-bottom:0.75rem;"><strong>Get a written quote.</strong> Reputable food trucks in South Jersey will provide a written quote covering the minimum guarantee, per-guest rate (if applicable), travel fee, and cancellation policy. Review this before committing.</li>
-      <li><strong>Confirm and deposit early.</strong> For peak-season dates (May through September weekends), the best trucks can book 12–16 weeks out. A deposit, typically 25–50% of the total, holds your date.</li>
+      <li><strong>Confirm and deposit early.</strong> Ask the operator which contract and deposit are required to hold the date. Review payment, refund, cancellation, and weather terms before committing.</li>
     </ol>
     <p style="line-height:1.8;color:var(--text);">Not sure which truck is right for your event? <a href="/contact">Use the contact form</a> and describe your event — we'll help match you with available operators.</p>
   </section>
 
   ${featured.length > 0 ? `<section style="margin-bottom:3rem;">
     <h2>Featured Food Trucks</h2>
-    <p style="line-height:1.8;color:var(--muted);margin-bottom:1.5rem;">A few of South Jersey's standout operators available for private events and catering.</p>
+    <p style="line-height:1.8;color:var(--muted);margin-bottom:1.5rem;">Featured directory records for your shortlist. Placement is not a scored review or a guarantee of event availability.</p>
     <div class="truck-grid" style="margin-top:1rem;">
       ${featured.map(t => `<a href="/trucks/${esc(t.slug)}" class="truck-card">
         <div class="truck-card-img-wrap">
@@ -333,7 +300,7 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
     <h2>Frequently Asked Questions</h2>
     <div class="faq-list" style="margin-top:1.5rem;">
       ${faqs.map(f => `<div class="faq-item">
-        <button class="faq-question" aria-expanded="false">
+        <button class="faq-question" aria-expanded="true">
           <span>${esc(f.q)}</span>
           <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
@@ -345,7 +312,7 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
   <div class="cta-band" style="margin:0 -1rem 2rem;border-radius:12px;">
     <div style="padding:2.5rem 2rem;text-align:center;">
       <h2 style="color:#fff;">Ready to Book a Food Truck?</h2>
-      <p style="color:rgba(255,255,255,0.9);margin-bottom:1.5rem;">Browse ${total}+ food trucks in South Jersey or tell us about your event.</p>
+      <p style="color:rgba(255,255,255,0.9);margin-bottom:1.5rem;">Browse ${total} food trucks in South Jersey or tell us about your event.</p>
       <div class="cta-actions">
         <a href="/directory" class="btn btn-white">Browse the Directory</a>
         <a href="/contact" class="btn btn-outline" style="border-color:rgba(255,255,255,0.6);color:#fff;">Get in Touch</a>
@@ -357,8 +324,8 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
 </div>`;
 
   return layout({
-    title: 'Food Trucks in South Jersey — Complete Guide to All 7 Counties',
-    desc: `The complete guide to food trucks in South Jersey. Browse ${total}+ operators across Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem counties. Find, hire, and rent food trucks for any event.`,
+    title: 'Food Trucks in South Jersey — County & Cuisine Guide',
+    desc: `Research ${total} food truck records in South Jersey and nearby areas. Browse county and cuisine pages, compare operators, and plan questions before booking.`,
     canonical: '/food-trucks-in-south-jersey',
     mainEntity: 'https://southjerseyfoodtruck.com/food-trucks-in-south-jersey#guide',
     about: { '@type': 'Place', name: 'South Jersey, New Jersey' },

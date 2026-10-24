@@ -1,5 +1,6 @@
 'use strict';
 const layout = require('./layout');
+const { truckEntity } = require('./truck-entity');
 const { esc, renderTruckImage } = require('../utils');
 const { cuisineSlug, countySlugForArea } = require('../taxonomy');
 
@@ -11,7 +12,7 @@ function truckCard(t) {
     <div class="truck-card-body">
       <div class="truck-card-badges">
         ${t.featured ? '<span class="badge badge-featured">&#9733; Featured</span>' : ''}
-        ${t.verified ? '<span class="badge badge-verified">&#10003; Verified Active</span>' : ''}
+        ${t.verified ? '<span class="badge badge-verified">&#10003; Recorded active check</span>' : ''}
         <span class="badge badge-cuisine">${esc(t.cuisine)}</span>
         <span class="badge badge-price">${esc(t.price_range || '$$')}</span>
       </div>
@@ -46,18 +47,7 @@ module.exports = function cityPage({ city, county, slug, trucks, cityPages = [] 
     itemListElement: cityTrucks.map((t, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      item: {
-        '@type': 'FoodEstablishment',
-        name: t.name,
-        url: `https://southjerseyfoodtruck.com/trucks/${t.slug}`,
-        servesCuisine: t.cuisine,
-        address: {
-          '@type': 'PostalAddress',
-          addressLocality: t.city,
-          addressRegion: 'NJ',
-          addressCountry: 'US'
-        }
-      }
+      item: truckEntity(t)
     }))
   };
 
@@ -75,7 +65,7 @@ module.exports = function cityPage({ city, county, slug, trucks, cityPages = [] 
     <h1 style="margin-bottom:0.3rem;">Food Trucks in ${esc(city)}, NJ</h1>
     <p style="color:var(--muted);margin-bottom:${cuisines.length ? '0.75rem' : '1.5rem'};">${total} food truck${total !== 1 ? 's' : ''} based in ${esc(city)}, ${esc(county)} &mdash; available for events, catering, and private parties.</p>
     ${cuisines.length ? `<p style="font-size:0.9rem;color:var(--muted);margin-bottom:0.75rem;">Cuisines represented: ${cuisineLinks}</p>` : ''}
-    <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1.5rem;">This city directory currently includes ${verifiedCount} verified active listing${verifiedCount !== 1 ? 's' : ''}. Check each operator&rsquo;s profile for contact details and confirm availability directly.</p>
+    <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1.5rem;">This city directory currently includes ${verifiedCount} recorded active check${verifiedCount !== 1 ? 's' : ''}. Check each operator&rsquo;s profile for contact details and confirm availability directly.</p>
   </div>
 </div>
 

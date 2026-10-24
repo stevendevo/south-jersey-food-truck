@@ -1,5 +1,6 @@
 'use strict';
 const layout = require('./layout');
+const { truckEntity } = require('./truck-entity');
 const { esc, renderTruckImage } = require('../utils');
 const { cityPageTargets, countySlugForArea } = require('../taxonomy');
 
@@ -20,7 +21,7 @@ function truckCard(t) {
     <div class="truck-card-body">
       <div class="truck-card-badges">
         ${t.featured ? '<span class="badge badge-featured">&#9733; Featured</span>' : ''}
-        ${t.verified ? '<span class="badge badge-verified">&#10003; Verified Active</span>' : ''}
+        ${t.verified ? '<span class="badge badge-verified">&#10003; Recorded active check</span>' : ''}
         <span class="badge badge-cuisine">${esc(t.cuisine)}</span>
         <span class="badge badge-county">${esc(t.area)}</span>
         <span class="badge badge-price">${esc(t.price_range || '$$')}</span>
@@ -43,18 +44,12 @@ module.exports = function directoryPage({ trucks }) {
     '@type': 'ItemList',
     '@id': 'https://southjerseyfoodtruck.com/directory#item-list',
     name: 'South Jersey Food Truck Directory',
-    description: `Complete directory of ${total}+ food trucks across South Jersey's seven counties.`,
+    description: `Directory of ${total} food truck listings in South Jersey and nearby areas.`,
     numberOfItems: total,
-    itemListElement: trucks.slice(0, 20).map((t, i) => ({
+    itemListElement: trucks.map((t, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      item: {
-        '@type': 'FoodEstablishment',
-        name: t.name,
-        url: `https://southjerseyfoodtruck.com/trucks/${t.slug}`,
-        servesCuisine: t.cuisine,
-        address: { '@type': 'PostalAddress', addressLocality: t.city, addressRegion: 'NJ', addressCountry: 'US' }
-      }
+      item: truckEntity(t)
     }))
   };
 
@@ -62,10 +57,10 @@ module.exports = function directoryPage({ trucks }) {
 <div class="directory-top">
   <div class="container">
     <h1 style="margin-bottom:0.75rem;">South Jersey Food Truck Directory</h1>
-    <p style="color:var(--text);line-height:1.8;max-width:720px;margin-bottom:1.5rem;">Looking for food trucks in South Jersey? You're in the right place. This directory lists ${total}+ mobile food operators across all seven South Jersey counties &mdash; Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem. Whether you're searching for a taco truck near Haddonfield, a wood-fired pizza operation for a Burlington County wedding, or a BBQ caterer for a Cherry Hill corporate event, use the filters below to narrow by county, cuisine type, or truck name. Every listing includes contact information so you can reach operators directly. <a href="/food-trucks-in-south-jersey">Learn more about South Jersey's food truck scene &rarr;</a></p>
+    <p style="color:var(--text);line-height:1.8;max-width:720px;margin-bottom:1.5rem;">Looking for food trucks in South Jersey? You're in the right place. This directory lists ${total} mobile food operators in South Jersey and nearby areas, with county pages covering Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem. Whether you're searching for a taco truck near Haddonfield, a wood-fired pizza operation for a Burlington County wedding, or a BBQ caterer for a Cherry Hill corporate event, use the filters below to narrow by county, cuisine type, or truck name. Open each profile for available operator links and listing details. Confirm travel and date availability directly with the operator. <a href="/food-trucks-in-south-jersey">Learn more about South Jersey's food truck scene &rarr;</a></p>
 
     <div class="directory-search">
-      <input type="text" id="dirSearch" placeholder="Search trucks, cuisines, cities&hellip;" autocomplete="off" />
+      <input type="text" id="dirSearch" aria-label="Search food trucks by name, cuisine, or city" placeholder="Search trucks, cuisines, cities&hellip;" autocomplete="off" />
     </div>
 
     <div class="filter-row">
@@ -145,7 +140,7 @@ ${grilly ? `<div class="container" style="padding-top:2rem;">
 <div class="cta-band">
   <div class="container">
     <h2>Own a Food Truck?</h2>
-    <p>Get your listing in front of thousands of South Jersey event planners.</p>
+    <p>Help South Jersey guests and event planners discover your truck.</p>
     <div class="cta-actions">
       <a href="/submit-truck" class="btn btn-white">Submit Your Truck &mdash; Free</a>
       <a href="/contact" class="btn btn-outline" style="border-color:rgba(255,255,255,0.6);color:#fff;">Contact Us</a>
@@ -154,8 +149,8 @@ ${grilly ? `<div class="container" style="padding-top:2rem;">
 </div>`;
 
   return layout({
-    title: `South Jersey Food Truck Directory — ${total}+ Local Food Trucks`,
-    desc: `Browse ${total}+ food trucks across Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland and Salem counties. Filter by cuisine, county, and price. Free to use.`,
+    title: `South Jersey Food Truck Directory — ${total} Listings`,
+    desc: `Browse ${total} food truck listings in South Jersey and nearby areas. Compare cuisines, recorded home bases and operator links. Filter by county or truck name.`,
     canonical: '/directory',
     mainEntity: 'https://southjerseyfoodtruck.com/directory#item-list',
     about: { '@type': 'Thing', name: 'South Jersey food trucks' },

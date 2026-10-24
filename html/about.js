@@ -13,7 +13,7 @@ module.exports = function aboutPage({ trucks = [] } = {}) {
   const jsonLd = {
     '@context': 'https://schema.org',
     ...layout.organizationSchema('Organization', {
-      description: 'The complete directory for finding and booking food trucks across all seven South Jersey counties.',
+      description: 'A directory for researching food trucks in South Jersey and nearby areas, with county pages covering the seven-county region.',
       areaServed: counties.map(c => ({ '@type': 'AdministrativeArea', name: `${c.name}, New Jersey` }))
     })
   };
@@ -25,13 +25,13 @@ module.exports = function aboutPage({ trucks = [] } = {}) {
   </div>
   <span class="section-label">About Us</span>
   <h1>About South Jersey Food Truck</h1>
-  <p class="about-lead">We built the directory we always wanted — comprehensive, honest, and focused exclusively on South Jersey's rolling kitchen scene.</p>
-  <p><strong>South Jersey Food Truck is a free directory for finding, comparing, and contacting food trucks across all seven South Jersey counties.</strong> We organize local operators by county and cuisine so guests and event planners can make a faster, better-informed choice.</p>
+  <p class="about-lead">Research local food trucks, compare cuisines, and plan the questions to ask before booking.</p>
+  <p><strong>South Jersey Food Truck is a free directory for finding, comparing, and contacting food trucks in South Jersey and nearby areas. County pages cover Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem counties.</strong> We organize local operators by county and cuisine so guests and event planners can make a faster, better-informed choice.</p>
 
   <div class="counties-grid" style="margin:1.5rem 0 2.5rem;">
     <div class="county-card"><strong>${totalTrucks}</strong><span>listed food trucks</span></div>
     <div class="county-card"><strong>7</strong><span>South Jersey counties</span></div>
-    <div class="county-card"><strong>${verifiedTrucks}</strong><span>verified active listings</span></div>
+    <div class="county-card"><strong>${verifiedTrucks}</strong><span>records marked checked</span></div>
     <div class="county-card"><strong>Free</strong><span>for guests and operators</span></div>
   </div>
   <p><a href="/directory-snapshot" style="color:var(--primary);">View the current directory snapshot with county and cuisine counts &rarr;</a></p>
@@ -52,11 +52,19 @@ module.exports = function aboutPage({ trucks = [] } = {}) {
 
   <h2>Why Food Trucks for Your Event?</h2>
   <p>Food trucks bring something traditional catering can't: energy. A well-chosen truck becomes a focal point for your event, sparks conversation, and delivers food that guests actually remember. Whether you're planning a wedding reception, a corporate picnic, a birthday party, or a block party, there's a South Jersey food truck that's the right fit.</p>
-  <p>The truck scene here has grown dramatically over the past five years. What was once a handful of roving cheesesteak operations has become a full ecosystem of specialty operators — wood-fired pizza, lobster rolls, Korean-fusion tacos, artisan donuts, French pastries, craft ice cream, and much more. Our directory captures all of it.</p>
+  <p>The directory groups operators by cuisine, city, and recorded county. It is a research tool rather than a census of every truck in the region, a real-time location service, or a guarantee of event availability.</p>
 
   <h2>How the Directory Works</h2>
-  <p>Every listing in our directory includes the truck's cuisine, service area, typical schedule, contact information, and a full description of what makes them worth hiring. We use operator-submitted details and directory reviews to keep listings useful, and the verified badge marks listings with a recorded active check. Always confirm menus, schedules, pricing, and availability directly with the truck.</p>
-  <p>If you own a food truck and want to be listed, it's free. Use the <a href="/submit-truck" style="color:var(--primary);">Submit Your Truck</a> page to send us your details. We'll review and publish your listing within a few business days.</p>
+  <p>Profiles include the details held in the directory record. Where a website, social profile, telephone number, or email address is recorded, the profile links to it. Some records do not have direct contact information; the event-inquiry form is a separate way to ask for planning help.</p>
+  <p>If you own a food truck and want to be listed, it's free. Use the <a href="/submit-truck" style="color:var(--primary);">Submit Your Truck</a> page to send us your details. Submissions are reviewed before publication.</p>
+
+  <section id="editorial-policy" aria-labelledby="editorial-policy-heading">
+    <h2 id="editorial-policy-heading">Listing sources and editorial policy</h2>
+    <p>Directory records and planning guides are starting points for research. A recorded active check is a field in the directory data, not independent confirmation of a business license, inspection, current operation, or availability. Check dates are shown on profiles when present; an older check does not establish that details are current.</p>
+    <p>Articles display the byline and publication or update dates stored with the guide. An Editorial Team byline identifies site editorial content. Named bylines identify the author recorded for an article; they do not imply an independently verified credential or professional qualification. Official-guidance links appear in guides where sources are recorded, and local authorities remain responsible for current permit and health requirements.</p>
+    <p>Grilly Cheese is identified on the site as the presenting sponsor. Featured placement is a directory designation, not a scored review or a promise that a truck is the best option. The event-inquiry form is presented by Grilly Cheese; submitting it does not contact every listed operator or confirm a booking.</p>
+    <p>For a correction, open the relevant truck profile and choose “Report outdated information.” Operators can use “Verify this listing” to submit details for review. Confirm menus, prices, dietary accommodations, service radius, insurance, permits, and event availability with the operator before making a booking.</p>
+  </section>
 
   <div class="about-org" style="margin-top:2.5rem;">
     <h3 style="margin-bottom:0.75rem;">Get in Touch</h3>
@@ -67,8 +75,9 @@ module.exports = function aboutPage({ trucks = [] } = {}) {
 
   return layout({
     title: 'About — South Jersey Food Truck Directory',
-    desc: 'Learn about South Jersey Food Truck — the dedicated directory connecting food truck fans and event planners with the best rolling kitchens across all seven South Jersey counties.',
+    desc: 'Learn how South Jersey Food Truck organizes local listings, records checks, identifies sponsored placement, and handles editorial content and corrections.',
     canonical: '/about',
+    mainEntity: 'https://southjerseyfoodtruck.com/#organization',
     jsonLd,
     content
   });

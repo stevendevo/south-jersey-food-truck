@@ -63,6 +63,26 @@ body.site-brand .sr-only {
   border: 0;
 }
 
+body.site-brand .skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  padding: 12px 18px;
+  color: var(--brand-ink);
+  background: #fff;
+  border-radius: var(--radius);
+  transform: translateY(-200%);
+}
+
+body.site-brand .skip-link:focus {
+  transform: translateY(0);
+}
+
+#main-content {
+  scroll-margin-top: 100px;
+}
+
 /* Shared navigation */
 body.site-brand .nav {
   position: sticky;

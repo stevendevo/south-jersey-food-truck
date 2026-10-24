@@ -40,10 +40,40 @@ function organizationSchema(type = 'Organization', extra = {}) {
   };
 }
 
+// JSON-LD is raw script text, so HTML escaping alone does not prevent a stored
+// </script> sequence from ending the element before the JSON parser sees it.
+function serializeSchema(schema) {
+  return JSON.stringify(schema).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+}
+
+function pageUrl(pathname = '/') {
+  const candidate = new URL(pathname || '/', DOMAIN);
+  if (candidate.origin !== DOMAIN) throw new Error('Canonical URLs must use the site origin');
+  candidate.search = '';
+  candidate.hash = '';
+  candidate.pathname = candidate.pathname.replace(/\/+$/, '') || '/';
+  return candidate.href;
+}
+
+function imageUrl(value) {
+  if (!value) return null;
+  try {
+    const candidate = new URL(value, DOMAIN);
+    return candidate.protocol === 'https:' && !candidate.username && !candidate.password ? candidate.href : null;
+  } catch {
+    return null;
+  }
+}
+
 function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'index, follow', jsonLd, breadcrumb, mainEntity, about, imageObject, websiteSearchAction = false, content, bodyClass = '', extraHead = '' }) {
-  const canonUrl = `${DOMAIN}${canonical || '/'}`;
-  const ogImg = og.image || `${DOMAIN}/opengraph.jpg`;
-  const ogImageAlt = og.imageAlt || (!og.image ? 'South Jersey Food Truck brand preview' : '');
+  const canonUrl = pageUrl(canonical);
+  const defaultImage = `${DOMAIN}/opengraph.jpg`;
+  const ogImg = imageUrl(og.image) || defaultImage;
+  const ogImageAlt = og.imageAlt || (ogImg === defaultImage ? 'South Jersey Food Truck brand preview' : title);
+  const ogWidth = og.width || (ogImg === defaultImage ? 1200 : null);
+  const ogHeight = og.height || (ogImg === defaultImage ? 630 : null);
+  const robotsContent = /(?:^|[,\s])noindex(?:$|[,\s])/i.test(robots)
+    ? robots : `${robots}, max-image-preview:large, max-snippet:-1, max-video-preview:-1`;
   const siteSchema = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -52,7 +82,9 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
         '@id': `${DOMAIN}/#website`,
         name: 'South Jersey Food Truck',
         url: DOMAIN,
-        description: 'The complete directory for finding, booking, and hiring food trucks across South Jersey.',
+        description: 'A directory for finding and contacting food trucks in South Jersey and nearby areas.',
+        publisher: { '@id': ORGANIZATION_ID },
+        inLanguage: 'en-US',
         ...(websiteSearchAction ? {
           potentialAction: {
             '@type': 'SearchAction',
@@ -86,11 +118,12 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
   const breadcrumbSchema = breadcrumb && breadcrumb.length > 1 ? {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': `${canonUrl}#breadcrumb`,
     itemListElement: breadcrumb.map((item, index) => ({
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: `${DOMAIN}${item.url}`
+      item: pageUrl(item.url)
     }))
   } : null;
   const pageSchema = {
@@ -101,7 +134,9 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
     name: title,
     description: desc,
     isPartOf: { '@id': `${DOMAIN}/#website` },
+    publisher: { '@id': ORGANIZATION_ID },
     inLanguage: 'en-US',
+    ...(breadcrumbSchema ? { breadcrumb: { '@id': breadcrumbSchema['@id'] } } : {}),
     ...(mainEntity ? { mainEntity: { '@id': mainEntity } } : {}),
     ...(articleMeta.publishedTime ? { datePublished: articleMeta.publishedTime } : {}),
     ...(articleMeta.modifiedTime ? { dateModified: articleMeta.modifiedTime } : {}),
@@ -119,7 +154,7 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
     representativeOfPage: true
   } : null;
   const schemas = [siteSchema, pageSchema, breadcrumbSchema, imageSchema, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])].filter(Boolean);
-  const ldStr = schemas.map(schema => `<script type="application/ld+json">${JSON.stringify(schema)}</script>`).join('\n  ');
+  const ldStr = schemas.map(schema => `<script type="application/ld+json">${serializeSchema(schema)}</script>`).join('\n  ');
   const year = new Date().getFullYear();
 
   return `<!DOCTYPE html>
@@ -129,17 +164,16 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(desc)}" />
-  <link rel="canonical" href="${canonUrl}" />
+  <link rel="canonical" href="${esc(canonUrl)}" />
   <meta property="og:title" content="${esc(og.title || title)}" />
   <meta property="og:description" content="${esc(og.desc || desc)}" />
-  <meta property="og:url" content="${canonUrl}" />
-  <meta property="og:type" content="${og.type || 'website'}" />
+  <meta property="og:url" content="${esc(canonUrl)}" />
+  <meta property="og:type" content="${esc(og.type || 'website')}" />
   <meta property="og:site_name" content="South Jersey Food Truck" />
   <meta property="og:locale" content="en_US" />
-  <meta property="og:image" content="${ogImg}" />
+  <meta property="og:image" content="${esc(ogImg)}" />
   ${ogImageAlt ? `<meta property="og:image:alt" content="${esc(ogImageAlt)}" />` : ''}
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+  ${ogWidth && ogHeight ? `<meta property="og:image:width" content="${esc(ogWidth)}" />\n  <meta property="og:image:height" content="${esc(ogHeight)}" />` : ''}
   ${articleMeta.publishedTime ? `<meta property="article:published_time" content="${esc(articleMeta.publishedTime)}" />` : ''}
   ${articleMeta.modifiedTime ? `<meta property="article:modified_time" content="${esc(articleMeta.modifiedTime)}" />` : ''}
   ${articleMeta.section ? `<meta property="article:section" content="${esc(articleMeta.section)}" />` : ''}
@@ -148,10 +182,10 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
   <meta name="twitter:site" content="@sjfoodtruck" />
   <meta name="twitter:title" content="${esc(og.title || title)}" />
   <meta name="twitter:description" content="${esc(og.desc || desc)}" />
-  <meta name="twitter:image" content="${ogImg}" />
+  <meta name="twitter:image" content="${esc(ogImg)}" />
   ${ogImageAlt ? `<meta name="twitter:image:alt" content="${esc(ogImageAlt)}" />` : ''}
   <meta name="theme-color" content="#0b1020" />
-  <meta name="robots" content="${esc(robots)}" />
+  <meta name="robots" content="${esc(robotsContent)}" />
   ${articleMeta.author ? `<meta name="author" content="${esc(articleMeta.author)}" />` : ''}
   <link rel="alternate" type="application/rss+xml" title="South Jersey Food Truck Blog" href="${DOMAIN}/blog.xml" />
   ${ldStr}
@@ -167,6 +201,7 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
   <link rel="stylesheet" href="/brand-refresh.css" />
 </head>
 <body class="${esc(['site-brand', bodyClass].filter(Boolean).join(' '))}">
+<a class="skip-link" href="#main-content">Skip to content</a>
 
 <nav class="nav" aria-label="Main navigation">
   <div class="container nav-container">
@@ -199,7 +234,7 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
   </div>
 </nav>
 
-<main>
+<main id="main-content" tabindex="-1">
 ${content}
 </main>
 
@@ -279,7 +314,7 @@ ${content}
       </div>
       <button class="assistant-close" id="assistantClose" type="button" aria-label="Close assistant">&times;</button>
     </div>
-    <p class="assistant-description" id="assistantDescription">Ask about trucks, cuisines, counties, hiring, or event planning. Answers use this site’s content and Replit-managed AI. Do not include personal or private information.</p>
+    <p class="assistant-description" id="assistantDescription">Ask about trucks, cuisines, counties, hiring, or event planning. Answers use this site’s content and AI. Check the linked sources and confirm details with operators. Do not include personal or private information.</p>
     <div class="assistant-messages" id="assistantMessages" role="log" aria-live="polite" aria-relevant="additions"></div>
     <p class="assistant-status sr-only" id="assistantStatus" aria-live="polite"></p>
     <form class="assistant-form" id="assistantForm">

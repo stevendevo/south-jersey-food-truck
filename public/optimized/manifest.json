@@ -1,0 +1,226 @@
+{
+  "/grilly-cheese-food-truck-philadelphia-event.jpg": {
+    "bytes": 64732,
+    "height": 480,
+    "sourceBytes": 65933,
+    "sourceSha256": "8a5b495030df93bfef9c03f5a4ce664f6791ad3c934b605a4665256059ea14b2",
+    "url": "/optimized/grilly-cheese-food-truck-philadelphia-event.jpg.webp",
+    "width": 720
+  },
+  "/seed/birthday-party-food-trucks-south-jersey.png": {
+    "bytes": 259512,
+    "height": 655,
+    "sourceBytes": 2404567,
+    "sourceSha256": "abbbccfd74accb1e3bda3c48264f11f58b5d5ed98171fe94f3a4794e18e91e3c",
+    "url": "/optimized/seed/birthday-party-food-trucks-south-jersey.png.webp",
+    "width": 1200
+  },
+  "/seed/blog_cook_profile.png": {
+    "bytes": 65162,
+    "height": 655,
+    "sourceBytes": 1431878,
+    "sourceSha256": "9d3f4efc65ddadb61d9e887ff2ad377c59c1095c2242e213f47166512ba4de74",
+    "url": "/optimized/seed/blog_cook_profile.png.webp",
+    "width": 1200
+  },
+  "/seed/blog_festival_recap.png": {
+    "bytes": 165384,
+    "height": 655,
+    "sourceBytes": 1936133,
+    "sourceSha256": "4d14690ede5fcaa351489d4e038bf68ccab0701e3632364a1a416adb788d2ce7",
+    "url": "/optimized/seed/blog_festival_recap.png.webp",
+    "width": 1200
+  },
+  "/seed/blog_summer_guide.png": {
+    "bytes": 172270,
+    "height": 655,
+    "sourceBytes": 2014150,
+    "sourceSha256": "5292a505de3a8295bc4857d677a80dd96bf18059f3003b954962c25a2d2bd32d",
+    "url": "/optimized/seed/blog_summer_guide.png.webp",
+    "width": 1200
+  },
+  "/seed/breakfast-brunch-food-trucks-south-jersey.png": {
+    "bytes": 117038,
+    "height": 655,
+    "sourceBytes": 1665740,
+    "sourceSha256": "0a2550e4f41ef87ee0549be5e4c45b03e39f729c25f33087aa7d5e0085eaa282",
+    "url": "/optimized/seed/breakfast-brunch-food-trucks-south-jersey.png.webp",
+    "width": 1200
+  },
+  "/seed/brewery-food-truck-pairings-south-jersey.png": {
+    "bytes": 146668,
+    "height": 655,
+    "sourceBytes": 1904386,
+    "sourceSha256": "97300b2507104925dc038523b220c0201c0c0837d97a2ba1036beeaef726c621",
+    "url": "/optimized/seed/brewery-food-truck-pairings-south-jersey.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_american.png": {
+    "bytes": 229908,
+    "height": 840,
+    "sourceBytes": 2161539,
+    "sourceSha256": "6e6e70fbc4bad8f1da2703985cb68226b12f5b2aa0c2c2c45e856b63c3f67349",
+    "url": "/optimized/seed/cat_american.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_bbq.png": {
+    "bytes": 135090,
+    "height": 840,
+    "sourceBytes": 1839273,
+    "sourceSha256": "f4c1f5288df0f5aa74fa5f057e2be8218894d465baae75584a963443184ebe43",
+    "url": "/optimized/seed/cat_bbq.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_burgers.png": {
+    "bytes": 106266,
+    "height": 840,
+    "sourceBytes": 1694256,
+    "sourceSha256": "d1cbaf3e145205987a473ead7e48ee66f9f253a666705afe1dc9b95d737676fc",
+    "url": "/optimized/seed/cat_burgers.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_desserts.png": {
+    "bytes": 83324,
+    "height": 840,
+    "sourceBytes": 1529605,
+    "sourceSha256": "e667fada31ea5cc479e4fbf136a4a4a4137a0f3a72d264d7baec0dbe2ba1a0be",
+    "url": "/optimized/seed/cat_desserts.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_mediterranean.png": {
+    "bytes": 153282,
+    "height": 840,
+    "sourceBytes": 1900776,
+    "sourceSha256": "4d45883b56d12138874f1e8257fc96072984d2ea4a547388e3e310428f57d66c",
+    "url": "/optimized/seed/cat_mediterranean.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_pizza.png": {
+    "bytes": 116790,
+    "height": 840,
+    "sourceBytes": 1766649,
+    "sourceSha256": "5b706831da9fef5e8d93f3ef25b0264fa6981cf9fe05b5e1fb6bd8be303831a1",
+    "url": "/optimized/seed/cat_pizza.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_sandwiches.png": {
+    "bytes": 151262,
+    "height": 840,
+    "sourceBytes": 1905477,
+    "sourceSha256": "4eb4323227927dc1fd65935418efc3140d9e2bca815ad0f0c480b59fad2c09f9",
+    "url": "/optimized/seed/cat_sandwiches.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_seafood.png": {
+    "bytes": 170788,
+    "height": 840,
+    "sourceBytes": 1941200,
+    "sourceSha256": "731bbda26f022f13400b8061b3b47b3641c19565c1558d4995544f6b5455bde4",
+    "url": "/optimized/seed/cat_seafood.png.webp",
+    "width": 1200
+  },
+  "/seed/cat_tacos_mexican.png": {
+    "bytes": 144038,
+    "height": 840,
+    "sourceBytes": 1860052,
+    "sourceSha256": "bb1871d76186bc37c7d40ce3f8e87673bb47efa7d6b9e58c03c953475209625a",
+    "url": "/optimized/seed/cat_tacos_mexican.png.webp",
+    "width": 1200
+  },
+  "/seed/cumberland-county-food-trucks-guide.jpg": {
+    "bytes": 221326,
+    "height": 1024,
+    "sourceBytes": 248074,
+    "sourceSha256": "2770df92449adac2c889bd464cad1a7c28042f0bc452589ea0738226890bb415",
+    "url": "/optimized/seed/cumberland-county-food-trucks-guide.jpg.webp",
+    "width": 1024
+  },
+  "/seed/fall-food-truck-events-south-jersey.jpg": {
+    "bytes": 159814,
+    "height": 1024,
+    "sourceBytes": 206302,
+    "sourceSha256": "7d8133b64f84c60ce9cb3d6d6a0f4995abf35d9f5150d313a02a6b2d8c9a30a1",
+    "url": "/optimized/seed/fall-food-truck-events-south-jersey.jpg.webp",
+    "width": 1024
+  },
+  "/seed/gloucester-county-food-trucks-guide.jpg": {
+    "bytes": 173944,
+    "height": 1024,
+    "sourceBytes": 214722,
+    "sourceSha256": "084bf8db4b12de4c63a443cf0017cf24a453c8f5e662c36905ef9a4763ac0cb8",
+    "url": "/optimized/seed/gloucester-county-food-trucks-guide.jpg.webp",
+    "width": 1024
+  },
+  "/seed/grilled-cheese-food-trucks-south-jersey.png": {
+    "bytes": 70766,
+    "height": 655,
+    "sourceBytes": 1600202,
+    "sourceSha256": "305cba8ae9da8bd981af257fee985702597963e6a662f56382d7e492845c1044",
+    "url": "/optimized/seed/grilled-cheese-food-trucks-south-jersey.png.webp",
+    "width": 1200
+  },
+  "/seed/indian-food-trucks-south-jersey.jpg": {
+    "bytes": 171652,
+    "height": 1024,
+    "sourceBytes": 220399,
+    "sourceSha256": "bac67fc18555182fe5a48af072dc8af27aed4c6e15e3d7044910d75c4e43bb6f",
+    "url": "/optimized/seed/indian-food-trucks-south-jersey.jpg.webp",
+    "width": 1024
+  },
+  "/seed/late-night-food-trucks-south-jersey.png": {
+    "bytes": 96742,
+    "height": 655,
+    "sourceBytes": 1709782,
+    "sourceSha256": "4332e5273ed07a846560a3e69c19a303ee66498b41e66cab3908927311c6becb",
+    "url": "/optimized/seed/late-night-food-trucks-south-jersey.png.webp",
+    "width": 1200
+  },
+  "/seed/salem-county-food-trucks-guide.jpg": {
+    "bytes": 160586,
+    "height": 1024,
+    "sourceBytes": 199005,
+    "sourceSha256": "aa72b6a65a987a170f448b1a6f1979aed3a2f4865b060e8d35b7f0061cbdfc7b",
+    "url": "/optimized/seed/salem-county-food-trucks-guide.jpg.webp",
+    "width": 1024
+  },
+  "/seed/seafood-food-trucks-south-jersey.jpg": {
+    "bytes": 96210,
+    "height": 1024,
+    "sourceBytes": 150727,
+    "sourceSha256": "83b5fed993b93d6e8581f5d3998678049d2d2c4d6ed57bd50733bb44a2d38029",
+    "url": "/optimized/seed/seafood-food-trucks-south-jersey.jpg.webp",
+    "width": 1024
+  },
+  "/seed/start-food-truck-business-south-jersey.png": {
+    "bytes": 72810,
+    "height": 655,
+    "sourceBytes": 1529189,
+    "sourceSha256": "dfdb8a6f3e4b84e6fa73aa101b8ecd85b121fd316da879f525aeeae01e75a4b3",
+    "url": "/optimized/seed/start-food-truck-business-south-jersey.png.webp",
+    "width": 1200
+  },
+  "/seed/truck_cape_may_lobster.png": {
+    "bytes": 108270,
+    "height": 840,
+    "sourceBytes": 1613487,
+    "sourceSha256": "8246cf37937dc33694d17528593aa0921075f61f0b12c1545350d5bae15bfa9c",
+    "url": "/optimized/seed/truck_cape_may_lobster.png.webp",
+    "width": 1200
+  },
+  "/seed/truck_collings_italian.png": {
+    "bytes": 158324,
+    "height": 840,
+    "sourceBytes": 1806852,
+    "sourceSha256": "0a1cf545d40f0544894f0695d23892da7ac2d21a4dcb4d9b42151cbd71c3466b",
+    "url": "/optimized/seed/truck_collings_italian.png.webp",
+    "width": 1200
+  },
+  "/seed/truck_pinelands_bbq.png": {
+    "bytes": 164752,
+    "height": 840,
+    "sourceBytes": 1897112,
+    "sourceSha256": "68d2c81aaf3019316e9101e48302e576caffe634fc825f9f01af9541de684f4b",
+    "url": "/optimized/seed/truck_pinelands_bbq.png.webp",
+    "width": 1200
+  }
+}

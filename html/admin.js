@@ -106,6 +106,7 @@ module.exports = function adminPage({ trucks, token, submissions = [], message =
     title: 'Admin — Truck Verification',
     desc: 'South Jersey Food Truck admin verification dashboard.',
     canonical: '/admin',
+    robots: 'noindex, nofollow',
     content
   });
 };

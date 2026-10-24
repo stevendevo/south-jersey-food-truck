@@ -1,6 +1,7 @@
 'use strict';
 const layout = require('./layout');
-const { esc, formatDateShort, hasVerifiedTruckImage, renderTruckImage } = require('../utils');
+const { esc, formatDateShort, hasVerifiedTruckImage, renderTruckImage, imageAsset } = require('../utils');
+const { truckEntity } = require('./truck-entity');
 
 const COUNTIES = ['Camden County', 'Burlington County', 'Atlantic County', 'Cape May County', 'Gloucester County', 'Cumberland County', 'Salem County'];
 
@@ -22,9 +23,10 @@ function truckCard(t) {
 }
 
 function blogCard(p) {
+  const image = imageAsset(p.cover_image_url || '/seed/blog_summer_guide.png');
   const tags = Array.isArray(p.tags) ? p.tags : (p.tags ? JSON.parse(p.tags) : []);
   return `<a href="/blog/${esc(p.slug)}" class="blog-card">
-    <img class="blog-card-img" src="${esc(p.cover_image_url || '/seed/blog_summer_guide.png')}" alt="${esc(p.cover_image_alt || p.title)}" loading="lazy" width="400" height="195" />
+    <img class="blog-card-img" src="${esc(image.url)}" alt="${esc(p.cover_image_alt || p.title)}" loading="lazy" decoding="async" width="${image.width || 400}" height="${image.height || 195}" />
     <div class="blog-card-body">
       <div class="blog-card-meta">${formatDateShort(p.published_at)} &middot; ${esc(p.author)}</div>
       <div class="blog-card-title">${esc(p.title)}</div>
@@ -43,6 +45,8 @@ module.exports = function homePage({ trucks, posts }) {
   ].slice(0, 3);
   const recentPosts = posts.slice().sort((a, b) => new Date(b.published_at) - new Date(a.published_at)).slice(0, 3);
   const totalTrucks = trucks.length;
+  const localTrucks = trucks.filter(t => COUNTIES.includes(t.area)).length;
+  const cuisineCount = new Set(trucks.map(t => t.cuisine).filter(Boolean)).size;
   const featuredTruckList = {
     '@type': 'ItemList',
     '@id': 'https://southjerseyfoodtruck.com/#featured-trucks',
@@ -52,42 +56,27 @@ module.exports = function homePage({ trucks, posts }) {
     itemListElement: homeTrucks.map((t, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      item: {
-        '@type': 'FoodEstablishment',
-        name: t.name,
-        url: `https://southjerseyfoodtruck.com/trucks/${t.slug}`,
-        servesCuisine: t.cuisine,
-        address: {
-          '@type': 'PostalAddress',
-          addressLocality: t.city,
-          addressRegion: t.area?.includes('County') ? 'NJ' : (t.area?.split(', ')[1] || 'NJ'),
-          addressCountry: 'US'
-        }
-      }
+      item: truckEntity(t)
     }))
   };
 
   const faqs = [
-    { q: 'How do I rent a food truck in South Jersey?', a: 'Browse our directory to find trucks that match your cuisine and location. Click any truck to see their contact details, then reach out directly by phone, email, or their website. For larger events, use our contact form and we\'ll connect you with available trucks.' },
-    { q: 'How far in advance should I rent a food truck?', a: 'For weekends and summer events, aim to rent 8–12 weeks in advance. Popular trucks fill their calendars quickly between May and September. For weekday corporate lunches or smaller gatherings, 3–4 weeks is usually enough.' },
-    { q: 'How much does it cost to hire a food truck in South Jersey?', a: 'Most trucks charge a minimum (typically $500–$1,500) and then bill per guest or per hour beyond that. High-end catering trucks or specialty options like lobster may run higher. Street-style trucks at festivals often have no hire fee.' },
-    { q: 'What areas of South Jersey do food trucks serve?', a: 'Our directory covers all seven South Jersey counties: Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem. Most trucks will travel within a 30–60 mile radius of their home base.' },
-    { q: 'Do food trucks cater private events like weddings and parties?', a: 'Yes — private event catering is one of the fastest-growing parts of the South Jersey truck scene. Trucks regularly cater weddings, graduation parties, birthday celebrations, baby showers, and block parties. Many offer customized menus, tasting options, and staffed service.' },
-    { q: 'Can I hire a food truck for a corporate event?', a: 'Absolutely. Food trucks are popular for employee appreciation days, product launches, office lunches, and trade shows. They\'re self-contained — no rental kitchen needed — and they create a memorable experience that a traditional caterer can\'t match. Ask trucks about corporate packages and invoicing procedures.' },
+    { q: 'How do I rent a food truck in South Jersey?', a: 'Browse the directory by county or cuisine, open a truck profile, and contact the operator using its listed website, phone, or email. Confirm the event date, service location, menu, guest count, and written quote directly. The site lists independent businesses; an inquiry does not confirm a booking.' },
+    { q: 'How far in advance should I rent a food truck?', a: 'Ask operators as soon as your date and venue are set, especially for weekends, weddings, and seasonal events. Availability varies by truck. Check directly rather than relying on a directory listing as a live calendar.' },
+    { q: 'How much does it cost to hire a food truck in South Jersey?', a: 'Request a written quote from the operator. Costs depend on the menu, guest count, service duration, travel, staffing, and any minimum spend. Ask whether tax, gratuity, power, and travel charges are included; this directory does not provide live prices.' },
+    { q: 'What areas of South Jersey do food trucks serve?', a: 'Browse county pages for Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem. The directory also includes nearby operators outside those counties. A home location does not guarantee service to your venue; confirm travel and availability with each truck.' },
+    { q: 'Do food trucks cater private events like weddings and parties?', a: 'Some listed operators offer private catering. Review their profiles, then ask about your event type, dietary needs, guest count, venue requirements, and cancellation terms before booking.' },
+    { q: 'Can I hire a food truck for a corporate event?', a: 'Contact operators about office lunches, employee events, or other corporate catering. Confirm service capacity, payment arrangements, insurance, site access, and power requirements with the truck and venue.' },
   ];
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        ...layout.organizationSchema('LocalBusiness'),
-        description: 'The complete directory for finding, booking, and hiring food trucks across all seven South Jersey counties.',
-        areaServed: COUNTIES.map(c => ({ '@type': 'AdministrativeArea', name: `${c}, New Jersey` })),
-        address: { '@type': 'PostalAddress', addressRegion: 'NJ', addressCountry: 'US' }
-      },
       featuredTruckList,
       {
         '@type': 'FAQPage',
+        '@id': 'https://southjerseyfoodtruck.com/#faq',
+        isPartOf: { '@id': 'https://southjerseyfoodtruck.com/#webpage' },
         mainEntity: faqs.map(f => ({
           '@type': 'Question',
           name: f.q,
@@ -102,7 +91,7 @@ module.exports = function homePage({ trucks, posts }) {
   <div class="container brand-home-hero-inner">
     <div class="brand-home-copy">
       <p class="brand-home-eyebrow">A better way to eat local <span aria-hidden="true">&middot;</span> NJ</p>
-      <h1>Find your next<br /><span>favorite</span> truck.</h1>
+      <h1>Find <span>food trucks</span><br />in South Jersey.</h1>
       <p class="brand-home-lead">South Jersey&rsquo;s rolling kitchens, in one sharp little directory.</p>
       <form class="hero-search" id="heroSearchForm" action="/directory" method="get">
         <label class="sr-only" for="heroSearchInput">Search trucks, cuisines, or counties</label>
@@ -110,9 +99,9 @@ module.exports = function homePage({ trucks, posts }) {
         <button type="submit">Start exploring <span aria-hidden="true">&rarr;</span></button>
       </form>
       <div class="brand-home-stats" aria-label="Directory summary">
-        <div class="brand-home-stat"><strong>${totalTrucks}+</strong><span>Trucks</span></div>
+        <div class="brand-home-stat"><strong>${totalTrucks}</strong><span>Listings</span></div>
         <div class="brand-home-stat"><strong>${COUNTIES.length}</strong><span>Counties</span></div>
-        <div class="brand-home-stat"><strong>20+</strong><span>Cuisines</span></div>
+        <div class="brand-home-stat"><strong>${cuisineCount}</strong><span>Cuisine categories</span></div>
       </div>
     </div>
   </div>
@@ -163,11 +152,10 @@ module.exports = function homePage({ trucks, posts }) {
       <h2 id="brandHomeAboutTitle">South Jersey&rsquo;s food truck scene.</h2>
     </div>
     <div class="brand-home-about-copy">
-      <p>Food trucks in South Jersey have grown from a handful of cheesesteak carts into one of the most dynamic mobile dining scenes on the East Coast. Across seven counties &mdash; Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem &mdash; more than ${totalTrucks} operators now serve everything from hand-pressed corn tortillas to certified Neapolitan pizza to Maine lobster rolls, all from purpose-built kitchens on wheels.</p>
-      <p>What makes South Jersey&rsquo;s food truck culture distinctive is how deeply it has woven itself into the region&rsquo;s community life. The Collingswood Saturday farmers market runs six to eight trucks every week year-round. Wildwood&rsquo;s boardwalk hosts trucks nightly from June through September. Cherry Hill&rsquo;s corporate parks see rotating lunch circuits five days a week. From Cape May City in the south to Mount Holly and Moorestown in the north, food trucks in South Jersey show up wherever people gather &mdash; and they keep coming back because the quality has risen dramatically.</p>
-      <p>The use cases have expanded just as fast. Hiring a food truck for a wedding is now commonplace across Camden and Burlington counties, where couples choose wood-fired pizza, gourmet grilled cheese, or smash burgers as their catering anchor instead of a conventional caterer. Corporate events throughout South Jersey &mdash; employee appreciation days, product launches, office lunches &mdash; book trucks months in advance because the guest experience simply can&rsquo;t be matched at the same price point. Festivals and farmers markets from Atlantic City to Vineland fill their lineups with local operators who bring serious culinary craft to every service window.</p>
-      <p>Want to rent a food truck in South Jersey for your next event? Browse the directory by cuisine or county, check individual listings for contact details, and reach out directly. For larger events or help matching the right truck to your guest count and budget, use the contact form and we&rsquo;ll point you in the right direction.</p>
-      <p>The cuisine range across South Jersey&rsquo;s food truck scene covers virtually every category: authentic Mexican street food, Texas-style BBQ, Korean-Jersey fusion, gourmet grilled cheese, fresh seafood, Neapolitan pizza, Indian curries, artisan desserts, and specialty coffee. Whatever your event needs, there are food trucks in South Jersey ready to serve it.</p>
+      <p><strong>South Jersey Food Truck is a directory of independent food truck operators.</strong> Browse ${totalTrucks} listings, including ${localTrucks} based in the seven-county South Jersey area, plus nearby operators. County pages cover Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem; listing counts vary by county.</p>
+      <p>Use the <a href="/directory">food truck directory</a> to compare cuisine categories and locations, then open a profile for the operator&rsquo;s website and available contact details. Directory locations describe home bases or listed service areas, not a live schedule or a guarantee that a truck can travel to your event.</p>
+      <p>For weddings, parties, and corporate events, confirm availability, guest capacity, menu, minimum spend, and venue requirements directly with the operator. Read the <a href="/food-truck-event-checklist">event planning checklist</a> before requesting a quote. Event inquiries through this site are presented by Grilly Cheese, as disclosed on the <a href="/contact">inquiry form</a>.</p>
+      <p>For current county and cuisine totals, see the <a href="/directory-snapshot">directory snapshot</a>. Learn how listing information is reviewed on our <a href="/about#editorial-policy">editorial policy</a>, and use a profile&rsquo;s correction link to report details that need updating.</p>
       <div class="brand-home-county-links">
         ${COUNTIES.map(c => `<a href="/${c.toLowerCase().replace(/\s+/g, '-')}-food-trucks">${esc(c.replace(' County', ''))}</a>`).join('\n        ')}
         <a class="brand-home-county-all" href="/directory">Browse all trucks <span aria-hidden="true">&rarr;</span></a>
@@ -185,7 +173,7 @@ module.exports = function homePage({ trucks, posts }) {
     </div>
     <div class="faq-list">
       ${faqs.map(f => `<div class="faq-item">
-        <button class="faq-question" aria-expanded="false">
+        <button class="faq-question" type="button" aria-expanded="false">
           <span>${esc(f.q)}</span>
           <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
@@ -211,10 +199,10 @@ module.exports = function homePage({ trucks, posts }) {
 </section>`;
 
   return layout({
-    title: `Food Trucks in South Jersey — Directory of ${totalTrucks}+ Local Trucks`,
-    desc: `Find, book, rent, or hire food trucks in South Jersey for weddings, parties, and events. Browse ${totalTrucks}+ local NJ food trucks across Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland & Salem counties.`,
+    title: `Food Trucks in South Jersey — ${totalTrucks} Listings & Catering`,
+    desc: `Find food trucks in South Jersey and nearby areas. Compare ${totalTrucks} listings by county and cuisine, contact operators, and plan catering for your event.`,
     canonical: '/',
-    mainEntity: 'https://southjerseyfoodtruck.com/#organization',
+    mainEntity: 'https://southjerseyfoodtruck.com/#featured-trucks',
     websiteSearchAction: true,
     jsonLd,
     bodyClass: 'brand-home',

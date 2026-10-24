@@ -644,10 +644,11 @@ strong { font-weight: 700; color: var(--text); }
 }
 .faq-question.open .faq-icon { transform: rotate(180deg); }
 .faq-answer {
-  display: none; padding: 0 1.5rem 1.25rem;
+  display: block; padding: 0 1.5rem 1.25rem;
   font-size: 0.95rem; color: var(--text-2); line-height: 1.75;
 }
 .faq-answer.open { display: block; }
+.faq-answer[hidden] { display: none; }
 .faq-cta {
   background: var(--bg-warm); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 2rem; text-align: center;

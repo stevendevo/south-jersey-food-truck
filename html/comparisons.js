@@ -1,8 +1,10 @@
 'use strict';
 const layout = require('./layout');
+const { COUNTY_SLUGS } = require('../taxonomy');
 const { esc } = require('../utils');
 
 module.exports = function comparisonsPage({ trucks = [], posts = [] } = {}) {
+  const localTotal = trucks.filter(truck => Object.values(COUNTY_SLUGS).includes(truck.area)).length;
   const postBySlug = new Map(posts.map(post => [post.slug, post]));
   const traditionalPost = postBySlug.get('food-truck-catering-vs-traditional-catering');
   const numberPost = postBySlug.get('how-many-food-trucks-for-an-event-south-jersey');
@@ -17,6 +19,7 @@ module.exports = function comparisonsPage({ trucks = [], posts = [] } = {}) {
     url: 'https://southjerseyfoodtruck.com/food-truck-comparisons',
     mainEntity: {
       '@type': 'ItemList',
+      numberOfItems: [traditionalPost, numberPost].filter(Boolean).length,
       itemListElement: [traditionalPost, numberPost].filter(Boolean).map((post, index) => ({
         '@type': 'ListItem',
         position: index + 1,
@@ -38,7 +41,7 @@ module.exports = function comparisonsPage({ trucks = [], posts = [] } = {}) {
 <div class="container" style="padding-top:3rem;padding-bottom:5rem;">
   <span class="section-label">Make the Call</span>
   <h1>South Jersey Food Truck Comparisons</h1>
-  <p style="max-width:760px;line-height:1.8;"><strong>The right catering choice depends on your guest experience, menu goals, venue logistics, and budget questions.</strong> Use this guide to compare food trucks with traditional catering and decide whether one truck or multiple trucks makes sense for your event. The directory currently includes ${trucks.length} listed operators across seven counties.</p>
+  <p style="max-width:760px;line-height:1.8;"><strong>The right catering choice depends on your guest experience, menu goals, venue logistics, and budget questions.</strong> Use this guide to compare food trucks with traditional catering and decide whether one truck or multiple trucks makes sense for your event. The directory currently includes ${trucks.length} records: ${localTotal} assigned to the seven South Jersey counties and ${trucks.length - localTotal} assigned elsewhere.</p>
 
   <h2>Food truck catering vs. traditional catering</h2>
   <div style="overflow-x:auto;">

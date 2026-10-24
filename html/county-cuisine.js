@@ -1,5 +1,6 @@
 'use strict';
 const layout = require('./layout');
+const { truckEntity } = require('./truck-entity');
 const { esc, renderTruckImage } = require('../utils');
 const { cuisineSlug, countySlugForArea, COUNTY_SLUGS } = require('../taxonomy');
 
@@ -11,7 +12,7 @@ function truckCard(t) {
     <div class="truck-card-body">
       <div class="truck-card-badges">
         ${t.featured ? '<span class="badge badge-featured">&#9733; Featured</span>' : ''}
-        ${t.verified ? '<span class="badge badge-verified">&#10003; Verified Active</span>' : ''}
+        ${t.verified ? '<span class="badge badge-verified">&#10003; Recorded active check</span>' : ''}
         <span class="badge badge-cuisine">${esc(t.cuisine)}</span>
         <span class="badge badge-price">${esc(t.price_range || '$$')}</span>
       </div>
@@ -38,13 +39,7 @@ module.exports = function countyCuisinePage({ county, countySlug, cuisine, cSlug
     itemListElement: matched.map((t, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      item: {
-        '@type': 'FoodEstablishment',
-        name: t.name,
-        url: `https://southjerseyfoodtruck.com/trucks/${t.slug}`,
-        servesCuisine: t.cuisine,
-        address: { '@type': 'PostalAddress', addressLocality: t.city, addressRegion: 'NJ', addressCountry: 'US' }
-      }
+      item: truckEntity(t)
     }))
   };
 

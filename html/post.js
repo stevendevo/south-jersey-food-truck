@@ -1,17 +1,14 @@
 'use strict';
 const layout = require('./layout');
-const { esc, formatDate, renderMarkdown, seoDescription } = require('../utils');
+const { esc, formatDate, renderMarkdown, seoDescription, imageAsset } = require('../utils');
 
 function authorSchema(author) {
-  if (author === 'Editorial Team') {
+  if (!author || author === 'Editorial Team') {
     return { '@id': 'https://southjerseyfoodtruck.com/#organization' };
   }
-  const slug = String(author || 'editorial-team').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   return {
     '@type': 'Person',
-    '@id': `https://southjerseyfoodtruck.com/about#author-${slug}`,
-    name: author,
-    worksFor: { '@id': 'https://southjerseyfoodtruck.com/#organization' }
+    name: author
   };
 }
 
@@ -31,7 +28,8 @@ module.exports = function postPage({ post: p, posts = [] }) {
     .sort((a, b) => b.sharedTags - a.sharedTags || new Date(b.post.published_at) - new Date(a.post.published_at))
     .slice(0, 3)
     .map(item => item.post);
-  const pubDate = p.published_at ? new Date(p.published_at).toISOString() : undefined;
+  const published = p.published_at ? new Date(p.published_at) : null;
+  const pubDate = published && !Number.isNaN(published.getTime()) ? published.toISOString() : undefined;
   const modDate = [p.updated_at, p.guidance_reviewed_at]
     .filter(Boolean)
     .map(value => new Date(value))
@@ -41,7 +39,9 @@ module.exports = function postPage({ post: p, posts = [] }) {
   const canonicalUrl = `https://southjerseyfoodtruck.com/blog/${p.slug}`;
   const metaDescription = seoDescription(p.seo_description, p.excerpt);
   const articleId = `${canonicalUrl}#article`;
-  const imageUrl = p.cover_image_url ? `https://southjerseyfoodtruck.com${p.cover_image_url}` : null;
+  const heroImage = imageAsset(p.cover_image_url || '/seed/blog_summer_guide.png');
+  const imageUrl = new URL(heroImage.url, 'https://southjerseyfoodtruck.com').href;
+  const citations = [...new Set([...String(p.content || '').matchAll(/\]\((https?:\/\/[^)\s]+)\)/g)].map(match => match[1]))];
   const wordCount = String(p.content || '').trim().split(/\s+/).filter(Boolean).length;
   const readingMinutes = Math.max(1, Math.ceil(wordCount / 220));
 
@@ -55,6 +55,8 @@ module.exports = function postPage({ post: p, posts = [] }) {
     image: imageUrl || undefined,
     datePublished: pubDate,
     dateModified: modDate,
+    ...(citations.length ? { citation: citations } : {}),
+    isPartOf: { '@id': 'https://southjerseyfoodtruck.com/blog#blog' },
     author: authorSchema(p.author),
     articleSection: tags[0] || 'Food Truck Guides',
     keywords: tags,
@@ -110,7 +112,7 @@ module.exports = function postPage({ post: p, posts = [] }) {
     : `${renderedPostContent}${guidanceReviewContent}`;
 
   const content = `
-<img class="post-hero-img" src="${esc(p.cover_image_url || '/seed/blog_summer_guide.png')}" alt="${esc(p.cover_image_alt || p.title)}" width="1200" height="480" fetchpriority="high" decoding="async" />
+<img class="post-hero-img" src="${esc(heroImage.url)}" alt="${esc(p.cover_image_alt || p.title)}" width="${heroImage.width || 1200}" height="${heroImage.height || 480}" fetchpriority="high" decoding="async" />
 
 <div class="post-header">
   <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -126,12 +128,12 @@ module.exports = function postPage({ post: p, posts = [] }) {
   <h1 class="post-title">${esc(p.title)}</h1>
 
   <div class="post-meta">
-    <span>By ${esc(p.author)}</span>
+    <span>By ${esc(p.author || 'Editorial Team')} &middot; <a href="/about#editorial-policy">Editorial policy</a></span>
     <span>&middot;</span>
     <time datetime="${esc(pubDate || '')}">${formatDate(p.published_at)}</time>
     <span>&middot;</span>
     <span>${readingMinutes} min read</span>
-    ${modDate && modDate !== pubDate ? `<span>&middot; Updated ${formatDate(p.updated_at)}</span>` : ''}
+    ${modDate && modDate !== pubDate ? `<span>&middot; Updated <time datetime="${esc(modDate)}">${formatDate(modDate)}</time></span>` : ''}
   </div>
 </div>
 
@@ -154,7 +156,7 @@ module.exports = function postPage({ post: p, posts = [] }) {
     desc: metaDescription,
     canonical: `/blog/${p.slug}`,
     og: {
-      image: p.cover_image_url ? `https://southjerseyfoodtruck.com${p.cover_image_url}` : undefined,
+      image: imageUrl || undefined,
       imageAlt: p.cover_image_alt || p.title,
       type: 'article'
     },
@@ -178,7 +180,7 @@ module.exports = function postPage({ post: p, posts = [] }) {
       { name: 'Blog', url: '/blog' },
       { name: p.title, url: `/blog/${p.slug}` }
     ],
-    extraHead: imageUrl ? `<link rel="preload" as="image" href="${imageUrl}" fetchpriority="high" />` : '',
+    extraHead: imageUrl ? `<link rel="preload" as="image" href="${esc(imageUrl)}" fetchpriority="high" />` : '',
     jsonLd,
     content
   });

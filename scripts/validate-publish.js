@@ -13,6 +13,10 @@ const CHECKS = [
   ['validate:county-cuisines', 'scripts/validate-county-cuisines.js'],
   ['validate:cross-county', 'scripts/validate-cross-county.js'],
   ['validate:seo', 'scripts/validate-seo.js'],
+  ['validate:search-readiness', 'scripts/validate-search-readiness.js'],
+  ['validate:metadata', 'scripts/validate-metadata.js'],
+  ['validate:content-evidence', 'scripts/test-content-evidence.js'],
+  ['validate:images', 'scripts/validate-image-assets.js'],
   ['validate:contact-delivery', 'scripts/validate-contact-delivery.js'],
   ['validate:sources', 'scripts/validate-sources.js'],
   ['validate:assistant', 'scripts/validate-assistant.js']
@@ -115,7 +119,7 @@ async function main() {
       console.error(`\nPublish validation failed. Publishing is blocked until these checks pass: ${failed.join(', ')}.`);
       process.exitCode = 1;
     } else {
-      console.log('\nPublish validation passed: directory, county cuisine, cross-county, sitemap, SEO, contact delivery, source-link, assistant, and form-protection checks are ready for release.');
+      console.log(`\nPublish validation passed: all ${CHECKS.length} validation groups completed successfully (${CHECKS.map(([name]) => name).join(', ')}).`);
     }
   } finally {
     validationServer.kill('SIGTERM');

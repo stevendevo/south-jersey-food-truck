@@ -394,20 +394,25 @@ function toggleNav() {
 
 /* ---- FAQ accordion ---- */
 (function () {
-  document.querySelectorAll('.faq-question').forEach(function (btn) {
+  var questions = document.querySelectorAll('.faq-question');
+  function setExpanded(button, expanded) {
+    button.classList.toggle('open', expanded);
+    button.setAttribute('aria-expanded', String(expanded));
+    if (button.nextElementSibling) {
+      button.nextElementSibling.classList.toggle('open', expanded);
+      button.nextElementSibling.hidden = !expanded;
+    }
+  }
+  questions.forEach(function (btn, index) {
+    var answer = btn.nextElementSibling;
+    if (!answer) return;
+    answer.id = answer.id || 'faq-answer-' + index;
+    btn.setAttribute('aria-controls', answer.id);
+    setExpanded(btn, false);
     btn.addEventListener('click', function () {
-      var answer = btn.nextElementSibling;
       var isOpen = btn.classList.contains('open');
-      // Close all
-      document.querySelectorAll('.faq-question').forEach(function (b) {
-        b.classList.remove('open');
-        if (b.nextElementSibling) b.nextElementSibling.classList.remove('open');
-      });
-      // Toggle this one
-      if (!isOpen) {
-        btn.classList.add('open');
-        if (answer) answer.classList.add('open');
-      }
+      questions.forEach(function (button) { setExpanded(button, false); });
+      if (!isOpen) setExpanded(btn, true);
     });
   });
 }());

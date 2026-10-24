@@ -33,3 +33,11 @@ Admin actions (truck verification, image review) write JSON. In production `DATA
 See `.env.example`. Production requires `SESSION_SECRET` and `ADMIN_TOKEN`; `RESEND_API_KEY` enables email; `OPENAI_API_KEY` enables the assistant.
 
 Admin: `/admin?token=<ADMIN_TOKEN>`
+
+## Search readiness
+
+See [SEO-AIO-AUDIT.md](SEO-AIO-AUDIT.md) for the audit, implemented fixes, validation
+evidence, and remaining production/content evidence gaps. `npm test` includes the
+full sitemap crawl, metadata, content evidence, and generated-image checks.
+`npm run validate:browser` is an optional UI smoke test against a running server
+(set `DIRECTORY_URL`; requires Playwright and Chromium).

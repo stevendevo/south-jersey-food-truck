@@ -87,6 +87,7 @@ module.exports = function verifyRequestPage({ truck, success = false, emailSent 
     title: `Verify Listing — ${truck.name}`,
     desc: `Verify your food truck listing for ${truck.name} on South Jersey Food Truck.`,
     canonical: `/verify/${truck.slug}`,
+    robots: 'noindex, follow',
     content
   });
 };

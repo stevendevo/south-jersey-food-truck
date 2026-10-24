@@ -40,6 +40,7 @@ module.exports = function reportUpdatePage({ truck, success = false, emailSent =
     title: `Report an Update — ${truck.name}`,
     desc: `Report an outdated detail on the ${truck.name} food truck listing.`,
     canonical: `/report-update/${truck.slug}`,
+    robots: 'noindex, follow',
     content
   });
 };

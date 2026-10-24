@@ -44,7 +44,10 @@ if (DATA_DIR !== BUNDLED_DATA_DIR) {
 }
 const readJsonData = (filename) => JSON.parse(fs.readFileSync(path.join(DATA_DIR, filename), 'utf8'));
 const trucks = readJsonData('trucks.json');
-const posts = readJsonData('posts.json');
+// Drafts and scheduled posts must not leak through routes, feeds, or AI context.
+const posts = readJsonData('posts.json').filter(post =>
+  post.slug && post.published_at && new Date(post.published_at).getTime() <= Date.now()
+);
 const imageSubmissions = readJsonData('image-submissions.json');
 const assistantService = createAssistantService({ trucks, posts });
 const assistantRate = new Map();
@@ -178,23 +181,53 @@ const STATIC_SITEMAP_LASTMOD = {
   '/faq': '2026-08-19',
   '/contact': '2026-05-31',
   '/submit-truck': '2026-05-26',
-  '/privacy': '2026-09-11',
+  '/privacy': '2026-10-24',
   '/terms': '2026-05-26',
 };
 
 function latestRecordDate(records, field) {
   return records
     .map(record => record[field])
-    .filter(Boolean)
+    .filter(value => value && Number.isFinite(new Date(value).getTime()) && new Date(value).getTime() <= Date.now())
     .sort((a, b) => new Date(b) - new Date(a))[0] || null;
 }
+
+function postModifiedDate(post) {
+  return latestRecordDate([
+    { date: post.published_at }, { date: post.updated_at }, { date: post.guidance_reviewed_at }
+  ], 'date');
+}
+
+// Resolve case variants only for known HTML routes. Asset paths are case sensitive.
+const CANONICAL_PAGE_PATHS = new Set([
+  ...Object.keys(STATIC_SITEMAP_LASTMOD),
+  ...trucks.filter(truck => truck.slug).map(truck => `/trucks/${truck.slug}`),
+  ...posts.map(post => `/blog/${post.slug}`),
+  ...Object.keys(COUNTY_SLUGS).map(slug => `/${slug}-food-trucks`),
+  ...Object.keys(cuisineSlugMap(trucks)).map(slug => `/south-jersey-${slug}-food-trucks`),
+  ...countyCuisineCombos(trucks).map(({ ctySlug, cSlug }) => `/${ctySlug}-${cSlug}-food-trucks`),
+  ...CITY_PAGE_TARGETS.map(({ slug }) => `/food-trucks-in-${slug}`)
+]);
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(express.urlencoded({ extended: false, limit: '32kb', parameterLimit: 40 }));
 app.use(express.json({ limit: '32kb' }));
 app.use((req, res, next) => {
-  if (['GET', 'HEAD'].includes(req.method) && req.path.length > 1 && req.path.endsWith('/')) {
-    const canonicalPath = req.path.slice(0, -1);
+  const operational = /^\/(?:admin|api|healthz|verify|report-update)(?:\/|$)/i.test(req.path);
+  const submission = !['GET', 'HEAD'].includes(req.method);
+  if (operational || submission) {
+    res.set('X-Robots-Tag', /^\/(?:admin|api|healthz)(?:\/|$)/i.test(req.path)
+      ? 'noindex, nofollow' : 'noindex, follow');
+    res.set('Cache-Control', 'private, no-store');
+    res.set('Referrer-Policy', 'no-referrer');
+  }
+  if (req.path.toLowerCase() === '/directory' && ['q', 'county', 'cuisine', 'sort'].some(key => key in req.query)) {
+    res.set('X-Robots-Tag', 'noindex, follow');
+  }
+  const trimmedPath = req.path.replace(/^\/+/, '/').replace(/\/+$/, '') || '/';
+  const canonicalPath = CANONICAL_PAGE_PATHS.has(trimmedPath.toLowerCase())
+    ? trimmedPath.toLowerCase() : trimmedPath;
+  if (['GET', 'HEAD'].includes(req.method) && canonicalPath !== req.path) {
     const isLegacyTruckPath = Object.prototype.hasOwnProperty.call(LEGACY_TRUCK_REDIRECTS, canonicalPath);
     const query = isLegacyTruckPath
       ? legacyTruckTrackingQuery(req.originalUrl)
@@ -312,7 +345,7 @@ app.get('/blog', (req, res) => {
 app.get('/blog/:slug', (req, res) => {
   const post = posts.find(p => p.slug === req.params.slug);
   if (!post) return sendNotFound(res);
-  sendFreshHtml(res, postPage({ post: autoLinkTrucks(post, trucks), posts }), post.updated_at || post.published_at);
+  sendFreshHtml(res, postPage({ post: autoLinkTrucks(post, trucks), posts }), postModifiedDate(post));
 });
 
 app.get('/about', (req, res) => {
@@ -841,7 +874,7 @@ app.post('/submit-truck', async (req, res) => {
 // ── Sitemap ───────────────────────────────────────────────────────────────────
 app.get('/sitemap.xml', (req, res) => {
   const latestTruckReview = latestRecordDate(trucks, 'last_verified');
-  const latestPostUpdate = latestRecordDate(posts, 'updated_at') || latestRecordDate(posts, 'published_at');
+  const latestPostUpdate = latestRecordDate(posts.map(post => ({ date: postModifiedDate(post) })), 'date');
   const pages = [
     { url: '/', priority: '1.0', freq: 'weekly', lastmod: STATIC_SITEMAP_LASTMOD['/'] },
     { url: '/food-trucks-in-south-jersey', priority: '0.95', freq: 'weekly', lastmod: STATIC_SITEMAP_LASTMOD['/food-trucks-in-south-jersey'] },
@@ -859,7 +892,7 @@ app.get('/sitemap.xml', (req, res) => {
     { url: '/privacy', priority: '0.3', freq: 'yearly', lastmod: STATIC_SITEMAP_LASTMOD['/privacy'] },
     { url: '/terms', priority: '0.3', freq: 'yearly', lastmod: STATIC_SITEMAP_LASTMOD['/terms'] },
     ...trucks.filter(t => t.slug).map(t => ({ url: `/trucks/${t.slug}`, priority: '0.7', freq: 'monthly', lastmod: t.last_verified, image: hasVerifiedTruckImage(t) ? t.image_url : null })),
-    ...posts.map(p => ({ url: `/blog/${p.slug}`, priority: '0.7', freq: 'monthly', lastmod: p.updated_at || p.published_at, image: p.cover_image_url })),
+    ...posts.map(p => ({ url: `/blog/${p.slug}`, priority: '0.7', freq: 'monthly', lastmod: postModifiedDate(p), image: p.cover_image_url })),
     ...Object.entries(COUNTY_SLUGS).map(([s, county]) => ({
       url: `/${s}-food-trucks`,
       priority: '0.8',
@@ -888,8 +921,8 @@ app.get('/sitemap.xml', (req, res) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${pages.map(p => `  <url>
-    <loc>${DOMAIN}${p.url}</loc>
-    <lastmod>${new Date(p.lastmod).toISOString().slice(0, 10)}</lastmod>
+    <loc>${xmlEscape(`${DOMAIN}${p.url}`)}</loc>
+    ${p.lastmod && Number.isFinite(new Date(p.lastmod).getTime()) ? `<lastmod>${new Date(p.lastmod).toISOString().slice(0, 10)}</lastmod>` : ''}
     <changefreq>${p.freq}</changefreq>
     <priority>${p.priority}</priority>
     ${p.image ? `<image:image><image:loc>${xmlEscape(p.image.startsWith('http') ? p.image : `${DOMAIN}${p.image}`)}</image:loc></image:image>` : ''}
@@ -912,29 +945,54 @@ app.get('/blog.xml', (req, res) => {
     </item>`)
     .join('\n');
   const latest = posts
-    .map(post => new Date(post.updated_at || post.published_at))
+    .map(post => new Date(postModifiedDate(post)))
     .sort((a, b) => b - a)[0];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>South Jersey Food Truck Blog</title>
     <link>${DOMAIN}/blog</link>
+    <atom:link href="${DOMAIN}/blog.xml" rel="self" type="application/rss+xml" />
     <description>Guides, event planning resources, and local food truck content for South Jersey.</description>
     <language>en-US</language>
-    <lastBuildDate>${latest.toUTCString()}</lastBuildDate>
+    ${latest ? `<lastBuildDate>${latest.toUTCString()}</lastBuildDate>` : ''}
 ${items}
   </channel>
 </rss>`;
-  if (!Number.isNaN(latest.getTime())) res.set('Last-Modified', latest.toUTCString());
+  if (latest && !Number.isNaN(latest.getTime())) res.set('Last-Modified', latest.toUTCString());
   res.set('Cache-Control', 'public, max-age=0, must-revalidate');
   res.type('application/rss+xml').send(xml);
 });
 
-// ── Robots.txt ────────────────────────────────────────────────────────────────
-app.get('/robots.txt', (req, res) => {
-  res.type('text/plain').send(
-    `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml\n\n# Blog update feed\n${DOMAIN}/blog.xml`
-  );
+// robots.txt has one source of truth in public/robots.txt, served above.
+
+// An optional reading guide, not an indexing directive or ranking guarantee.
+app.get('/llms.txt', (req, res) => {
+  const link = (name, url, description) => `- [${name}](${DOMAIN}${url}): ${description}`;
+  res.type('text/plain').set('Cache-Control', 'public, max-age=0, must-revalidate').send([
+    '# South Jersey Food Truck',
+    '',
+    '> A directory and event-planning guide for South Jersey food trucks, including nearby operators. Listings are not live schedules or confirmed booking offers.',
+    '',
+    '## Start here',
+    link('Directory', '/directory', `${trucks.length} operator profiles with county and cuisine filters.`),
+    link('South Jersey guide', '/food-trucks-in-south-jersey', 'Browse counties, cities, cuisines, and nearby operators.'),
+    link('Articles', '/blog', `${posts.length} published guides. Use each article’s displayed publication and review dates.`),
+    link('Frequently asked questions', '/faq', 'General directory and event-planning answers.'),
+    link('Event checklist', '/food-truck-event-checklist', 'Questions to confirm with operators and venues.'),
+    '',
+    '## Sources and limitations',
+    link('About and editorial policy', '/about#editorial-policy', 'How directory information, sponsorship, sources, and corrections are handled.'),
+    link('Directory snapshot', '/directory-snapshot', 'Recorded listing counts and review dates, not real-time operating status.'),
+    link('Contact', '/contact', 'Site inquiries; this is not a universal booking confirmation service.'),
+    '',
+    'Cite the relevant canonical truck profile or article, not assistant-generated answers. Distinguish operator home base from service area. Confirm current locations, hours, menus, prices, availability, permits, and accessibility directly with operators and authorities. A recorded active check is not a license, insurance certification, endorsement, or guarantee.',
+    '',
+    '## Discovery',
+    link('Sitemap', '/sitemap.xml', 'Canonical public page inventory.'),
+    link('RSS feed', '/blog.xml', 'Published article updates.'),
+    ''
+  ].join('\n'));
 });
 
 // ── Static pages ──────────────────────────────────────────────────────────────
@@ -944,7 +1002,7 @@ app.get('/privacy', (req, res) => {
     title: 'Privacy Policy — South Jersey Food Truck',
     desc: 'Privacy policy for South Jersey Food Truck.',
     canonical: '/privacy',
-    content: `<div class="contact-page"><h1>Privacy Policy</h1><p style="color:var(--muted);margin-bottom:1.5rem;">Last updated: September 2026</p><p>South Jersey Food Truck does not sell your personal information. Contact form submissions are used solely to respond to your inquiry.</p><p style="margin-top:1rem;">The site assistant sends your question and a short recent chat history to a Replit-managed OpenAI service to generate an answer. The site does not save chat transcripts. Do not include personal or private information in assistant messages.</p><p style="margin-top:1rem;">Public forms use an encrypted, expiring math challenge, submission timing, and standard server security logs to prevent automated abuse and support troubleshooting.</p></div>`
+    content: `<div class="contact-page"><h1>Privacy Policy</h1><p style="color:var(--muted);margin-bottom:1.5rem;">Last updated: October 2026</p><p>South Jersey Food Truck does not sell your personal information. Contact form submissions are used solely to respond to your inquiry.</p><p style="margin-top:1rem;">When configured, the site assistant sends your question and a short recent chat history to the configured AI service to generate an answer. The site does not save chat transcripts. Do not include personal or private information in assistant messages.</p><p style="margin-top:1rem;">Public forms use an encrypted, expiring math challenge, submission timing, and standard server security logs to prevent automated abuse and support troubleshooting.</p></div>`
   }));
 });
 

@@ -1,7 +1,8 @@
 'use strict';
 const layout = require('./layout');
+const { truckAddress } = require('./truck-entity');
 const { truckCard } = require('./directory');
-const { esc, hasVerifiedTruckImage, renderTruckImage } = require('../utils');
+const { esc, hasVerifiedTruckImage, renderTruckImage, imageAsset } = require('../utils');
 const { cuisineSlug, COUNTY_SLUGS } = require('../taxonomy');
 
 const EVENT_CONTEXTS = [
@@ -74,12 +75,11 @@ function validVerificationDate(value) {
 module.exports = function truckPage({ truck: t, nearbyTrucks = [], cityPageTarget = null }) {
   const specialties = Array.isArray(t.specialties) ? t.specialties : (t.specialties ? JSON.parse(t.specialties) : []);
   const lastVerified = validVerificationDate(t.last_verified);
-  const imgSrc = hasVerifiedTruckImage(t) ? t.image_url : null;
+  const imgSrc = hasVerifiedTruckImage(t) ? imageAsset(t.image_url).url : null;
   const listingText = [t.description, t.short_description, t.schedule].filter(Boolean).join(' ');
   const eventContexts = EVENT_CONTEXTS.filter(context => context.pattern.test(listingText)).map(context => context.label);
   const operatorQuote = t.operator_quote_approved && t.operator_quote ? t.operator_quote : null;
 
-  const isGrilly = t.slug === 'grilly-cheese';
   const isNJArea = !t.area || t.area.includes('County');
   const stateLabel = isNJArea ? 'NJ' : (t.area.split(', ')[1] || 'NJ');
   const sameAs = [
@@ -97,13 +97,12 @@ module.exports = function truckPage({ truck: t, nearbyTrucks = [], cityPageTarge
     name: t.name,
     description: t.description || t.short_description,
     servesCuisine: t.cuisine,
-    priceRange: t.price_range || '$$',
+    ...(t.price_range ? { priceRange: t.price_range } : {}),
     url: `https://southjerseyfoodtruck.com/trucks/${t.slug}`,
     image: imageUrl || undefined,
     telephone: t.phone || undefined,
     email: t.email || undefined,
-    address: { '@type': 'PostalAddress', addressLocality: t.city, addressRegion: stateLabel, addressCountry: 'US' },
-    areaServed: { '@type': 'AdministrativeArea', name: isNJArea ? `${t.area}, New Jersey` : t.area },
+    address: truckAddress(t),
     sameAs: sameAs.length ? sameAs : undefined,
     ...(openingHoursSpecification ? { openingHoursSpecification } : {})
   };
@@ -132,12 +131,12 @@ ${renderTruckImage(t, { className: 'truck-hero-img', wrapperClass: 'truck-brand-
 
     <div class="truck-detail-badges">
       ${t.featured ? '<span class="badge badge-featured">&#9733; Featured</span>' : ''}
-      ${t.verified ? '<span class="badge badge-verified">&#10003; Verified Active</span>' : ''}
+      ${t.verified ? '<span class="badge badge-verified">&#10003; Recorded active check</span>' : ''}
       <span class="badge badge-cuisine">${esc(t.cuisine)}</span>
       <span class="badge badge-county">${esc(t.area)}</span>
       <span class="badge badge-price">${esc(t.price_range || '$$')}</span>
     </div>
-    ${t.verified && lastVerified ? `<p class="truck-verified-date">Last verified ${new Date(lastVerified + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>` : ''}
+    ${t.verified && lastVerified ? `<p class="truck-verified-date">Recorded check: ${new Date(lastVerified + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>` : ''}
 
     <h1>${esc(t.name)}</h1>
     <p class="truck-short-desc">${esc(t.short_description)}</p>
@@ -160,7 +159,7 @@ ${renderTruckImage(t, { className: 'truck-hero-img', wrapperClass: 'truck-brand-
 
   <div class="truck-info-card" style="margin:1.5rem 0;">
     <div class="truck-info-title">South Jersey Food Truck directory note</div>
-    <p style="margin:0 0 0.75rem;">This listing gives event planners a starting point for comparing ${esc(t.cuisine.toLowerCase())} options serving ${esc(t.area)}${specialties.length ? `, including ${esc(specialties.slice(0, 3).join(', '))}` : ''}.</p>
+    <p style="margin:0 0 0.75rem;">This directory record gives event planners a starting point for researching ${esc(t.cuisine.toLowerCase())} options serving ${esc(t.area)}${specialties.length ? `, including ${esc(specialties.slice(0, 3).join(', '))}` : ''}.</p>
     <p style="margin:0;color:var(--muted);font-size:0.9rem;">Before booking, confirm the current menu, pricing, service radius, arrival and setup requirements, dietary accommodations, and date availability directly with the operator.</p>
   </div>
 
@@ -180,14 +179,14 @@ ${renderTruckImage(t, { className: 'truck-hero-img', wrapperClass: 'truck-brand-
 
     <div class="truck-info-card">
       <div class="truck-info-title">Contact &amp; Booking</div>
-      ${t.slug === 'grilly-cheese' ? `
+      ${t.phone || t.email || t.website || t.instagram || t.facebook ? `
         ${t.phone ? `<div class="truck-info-item"><a href="tel:${esc(t.phone)}">${esc(t.phone)}</a></div>` : ''}
         ${t.email ? `<div class="truck-info-item"><a href="mailto:${esc(t.email)}">${esc(t.email)}</a></div>` : ''}
         ${t.website ? `<div class="truck-info-item"><a href="${esc(t.website)}" target="_blank" rel="noopener">Visit Website &rarr;</a></div>` : ''}
         ${t.instagram ? `<div class="truck-info-item"><a href="https://instagram.com/${esc(t.instagram.replace('@',''))}" target="_blank" rel="noopener">${esc(t.instagram)} on Instagram</a></div>` : ''}
         ${t.facebook ? `<div class="truck-info-item"><a href="https://facebook.com/${esc(t.facebook)}" target="_blank" rel="noopener">${esc(t.facebook)} on Facebook</a></div>` : ''}
       ` : `
-        <div class="truck-info-item" style="margin-bottom:0.75rem;color:var(--muted);">Looking to rent a food truck for your event? Use our contact form and we&rsquo;ll help match you with the right truck.</div>
+        <div class="truck-info-item" style="margin-bottom:0.75rem;color:var(--muted);">No direct operator contact is recorded for this listing. You can report a correction or use our event-inquiry form for help comparing options; an inquiry does not confirm this truck&rsquo;s availability.</div>
         <a href="/contact" class="btn btn-primary btn-sm">Rent a Food Truck &rarr;</a>
       `}
     </div>
@@ -218,7 +217,7 @@ ${renderTruckImage(t, { className: 'truck-hero-img', wrapperClass: 'truck-brand-
   </div>
 
   <div class="truck-verify-box" style="margin-top:2rem;padding:1.25rem;background:rgba(45,122,62,0.06);border:1px solid rgba(45,122,62,0.2);border-radius:var(--radius);">
-    <p style="margin:0;font-size:0.9rem;color:var(--muted);">Last checked${lastVerified ? ` ${new Date(lastVerified + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : ''}. The verified badge means the listing has a recorded active check — it does not guarantee current menus, pricing, or availability.</p>
+    <p style="margin:0;font-size:0.9rem;color:var(--muted);">${lastVerified ? `Recorded listing check: <time datetime="${lastVerified}">${new Date(lastVerified + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time>.` : 'No dated listing check is recorded.'} The verified badge reflects the directory record; it is not independent confirmation of licensing, current operation, menus, pricing, or availability. See our <a href="/about#editorial-policy">listing and editorial policy</a>.</p>
     <p style="margin:0.75rem 0 0;font-size:0.9rem;"><a href="/verify/${esc(t.slug)}" style="color:var(--primary);">Are you the owner? Verify this listing</a> <span style="color:var(--muted);">&bull;</span> <a href="/report-update/${esc(t.slug)}" style="color:var(--primary);">Report outdated information</a></p>
   </div>
 </div>

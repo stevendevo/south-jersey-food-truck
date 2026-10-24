@@ -172,8 +172,8 @@ async function main() {
     }
     assertNearbyTruckCards(response.body, truck, trucks);
   }
-  if (!snapshot.body.includes(`includes ${total} food trucks`) || !snapshot.body.includes(`<strong>${verified}</strong>`)) {
-    fail(`snapshot totals do not match ${total} listings and ${verified} verified listings`);
+  if (!snapshot.body.includes(`contains ${total} food truck records`) || !snapshot.body.includes(`<strong>${verified}</strong>`)) {
+    fail(`snapshot totals do not match ${total} listings and ${verified} recorded checks`);
   }
   if (!map.body.includes('South Jersey Food Truck Map')) {
     fail('map page is missing its title');

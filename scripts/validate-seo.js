@@ -3,7 +3,7 @@
 const http = require('http');
 const posts = require('../data/posts.json');
 const trucks = require('../data/trucks.json');
-const { hasVerifiedTruckImage } = require('../utils');
+const { hasVerifiedTruckImage, imageAsset } = require('../utils');
 
 const { getOpeningHoursSpecification } = require('../html/truck');
 const layout = require('../html/layout');
@@ -463,13 +463,11 @@ async function main() {
     searchAction.target !== 'https://southjerseyfoodtruck.com/directory?q={search_term_string}' ||
     searchAction['query-input'] !== 'required name=search_term_string' ||
     !organization ||
-    !localBusiness ||
-    organization.name !== localBusiness.name ||
+    localBusiness ||
     !hasTrustedOrganizationDetails(organization) ||
-    !hasTrustedOrganizationDetails(localBusiness) ||
     !home.body.includes('<form class="hero-search" id="heroSearchForm" action="/directory" method="get">')
   ) {
-    fail('homepage Organization/LocalBusiness schema is inconsistent or contains unverified, malformed, or placeholder contact details');
+    fail('homepage must describe one Organization, without an unsupported LocalBusiness identity or unverified contact details');
   }
 
   const featuredList = homeNodes.find(schema =>
@@ -663,8 +661,9 @@ async function main() {
       fail(`unreviewed or incomplete truck operating hours were exposed in schema: ${truck.slug}`);
     }
 
+    const assetUrl = imageAsset(truck.image_url).url;
     const expectedImage = hasVerifiedTruckImage(truck)
-      ? (truck.image_url.startsWith('http') ? truck.image_url : `https://southjerseyfoodtruck.com${truck.image_url}`)
+      ? (assetUrl.startsWith('http') ? assetUrl : `https://southjerseyfoodtruck.com${assetUrl}`)
       : null;
     if (expectedImage && establishment.image !== expectedImage) {
       fail(`verified truck image is missing from schema: ${truck.slug}`);

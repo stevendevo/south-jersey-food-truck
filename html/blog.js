@@ -1,11 +1,12 @@
 'use strict';
 const layout = require('./layout');
-const { esc, formatDateShort } = require('../utils');
+const { esc, formatDateShort, imageAsset } = require('../utils');
 
 function blogCard(p) {
   const tags = Array.isArray(p.tags) ? p.tags : (p.tags ? JSON.parse(p.tags) : []);
+  const image = imageAsset(p.cover_image_url || '/seed/blog_summer_guide.png');
   return `<a href="/blog/${esc(p.slug)}" class="blog-card">
-    <img class="blog-card-img" src="${esc(p.cover_image_url || '/seed/blog_summer_guide.png')}" alt="${esc(p.cover_image_alt || p.title)}" loading="lazy" width="400" height="195" />
+    <img class="blog-card-img" src="${esc(image.url)}" alt="${esc(p.cover_image_alt || p.title)}" loading="lazy" width="${image.width || 400}" height="${image.height || 195}" />
     <div class="blog-card-body">
       <div class="blog-card-meta">${formatDateShort(p.published_at)} &middot; ${esc(p.author)}</div>
       <div class="blog-card-title">${esc(p.title)}</div>
@@ -37,14 +38,15 @@ module.exports = function blogPage({ posts }) {
     },
     blogPost: sortedPosts.map(p => ({
       '@type': 'BlogPosting',
+      '@id': `https://southjerseyfoodtruck.com/blog/${p.slug}#article`,
       headline: p.title,
       description: p.seo_description || p.excerpt,
       url: `https://southjerseyfoodtruck.com/blog/${p.slug}`,
-      image: p.cover_image_url ? `https://southjerseyfoodtruck.com${p.cover_image_url}` : undefined,
+      image: new URL(imageAsset(p.cover_image_url || '/seed/blog_summer_guide.png').url, 'https://southjerseyfoodtruck.com').href,
       datePublished: new Date(p.published_at).toISOString(),
-      dateModified: new Date(p.updated_at || p.published_at).toISOString(),
-      author: { '@type': 'Person', name: p.author },
-      mainEntityOfPage: { '@type': 'WebPage', '@id': `https://southjerseyfoodtruck.com/blog/${p.slug}` }
+      dateModified: [p.updated_at, p.guidance_reviewed_at, p.published_at].filter(Boolean).map(value => new Date(value)).filter(date => !Number.isNaN(date.getTime())).sort((a, b) => b - a)[0]?.toISOString(),
+      author: !p.author || p.author === 'Editorial Team' ? { '@id': 'https://southjerseyfoodtruck.com/#organization' } : { '@type': 'Person', name: p.author },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': `https://southjerseyfoodtruck.com/blog/${p.slug}#webpage` }
     }))
   };
 

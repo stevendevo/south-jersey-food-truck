@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /healthz
 Sitemap: https://southjerseyfoodtruck.com/sitemap.xml
 
-# Blog update feed
-https://southjerseyfoodtruck.com/blog.xml
+# Blog update feed: https://southjerseyfoodtruck.com/blog.xml
+# Optional AI reading guide: https://southjerseyfoodtruck.com/llms.txt
