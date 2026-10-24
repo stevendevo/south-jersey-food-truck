@@ -44,8 +44,11 @@ if (DATA_DIR !== BUNDLED_DATA_DIR) {
 }
 const readJsonData = (filename) => JSON.parse(fs.readFileSync(path.join(DATA_DIR, filename), 'utf8'));
 const trucks = readJsonData('trucks.json');
+// Editorial additions ship with the app bundle so they can be added without
+// replacing the operator-maintained posts on Railway's persistent volume.
+const editorialPosts = require('./data/editorial-guides-2026.json');
 // Drafts and scheduled posts must not leak through routes, feeds, or AI context.
-const posts = readJsonData('posts.json').filter(post =>
+const posts = [...readJsonData('posts.json'), ...editorialPosts].filter(post =>
   post.slug && post.published_at && new Date(post.published_at).getTime() <= Date.now()
 );
 const imageSubmissions = readJsonData('image-submissions.json');
