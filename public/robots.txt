@@ -1,9 +1,35 @@
+# Public directory and guide pages are open to search engines and to AI
+# search/assistant crawlers so listings can be found and cited with a link
+# back to the canonical page. Named agents share the same rules as "*";
+# they are listed so the access decision is explicit, not accidental.
 User-agent: *
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Applebot
+User-agent: DuckDuckBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: MistralAI-User
+User-agent: CCBot
 Allow: /
 Disallow: /admin
 Disallow: /api/
 Disallow: /healthz
+# /verify/ and /report-update/ stay crawlable on purpose: they send
+# X-Robots-Tag noindex, which a crawler can only see if it may fetch them.
+
 Sitemap: https://southjerseyfoodtruck.com/sitemap.xml
 
 # Blog update feed: https://southjerseyfoodtruck.com/blog.xml
-# Optional AI reading guide: https://southjerseyfoodtruck.com/llms.txt
+# AI reading guide: https://southjerseyfoodtruck.com/llms.txt
+# Full plain-text directory and guide index: https://southjerseyfoodtruck.com/llms-full.txt

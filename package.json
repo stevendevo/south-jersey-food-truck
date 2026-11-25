@@ -4,7 +4,9 @@
   "private": true,
   "description": "SouthJerseyFoodTruck.com — South Jersey food truck directory, guides, and event inquiries",
   "type": "commonjs",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "node --watch server.js",
     "start": "node server.js",
@@ -21,9 +23,11 @@
     "validate:contact-delivery": "node scripts/validate-contact-delivery.js",
     "validate:sources": "node scripts/validate-sources.js",
     "validate:assistant": "node scripts/validate-assistant.js",
-    "validate:publish": "node scripts/validate-publish.js"
+    "validate:publish": "node scripts/validate-publish.js",
+    "indexnow": "node scripts/indexnow-submit.js"
   },
   "dependencies": {
+    "compression": "^1.8.2",
     "express": "^4.22.2",
     "openai": "^7.12.1",
     "resend": "^6.12.3"
