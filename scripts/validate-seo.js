@@ -1,7 +1,8 @@
 'use strict';
 
 const http = require('http');
-const posts = require('../data/posts.json');
+const { publishedPosts } = require('../published-posts');
+const posts = publishedPosts(require('../data/posts.json'));
 const trucks = require('../data/trucks.json');
 const { hasVerifiedTruckImage, imageAsset } = require('../utils');
 

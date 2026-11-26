@@ -118,3 +118,24 @@ assets. Rebuild after changing source images with
 `python scripts/optimize-images.py` (Pillow with WebP support; validated with
 Pillow 12.3.0). Originals remain untouched. Review the output, then run
 `npm run validate:images` and the full suite. Production startup needs only Node.
+
+## Follow-up pass — November 25, 2026
+
+| Priority | Finding | Implementation |
+| --- | --- | --- |
+| High | The 25 editorial guides added after the October audit were served by the site, but `validate:seo`, `validate:search-readiness`, and `validate:sources` still counted only `posts.json`, so `npm test` failed and the new guides were never link- or source-checked. | Move the published-post definition into `published-posts.js`, used by the server and those validators. The suite now covers all 65 articles. |
+| High | Two editorial guides linked to articles that do not exist (`/blog/questions-to-ask-food-truck-before-booking`, `/blog/food-truck-checklist-day-before-event`). | Point both at the existing `/food-truck-event-checklist` page, which covers the referenced topics. |
+| Medium | HTML was sent uncompressed. The directory page is ~110 KB of server-rendered markup. | Add `compression` middleware. Measured locally: `/directory` 110 KB → 15 KB, `/` 31 KB → 7 KB. |
+| Medium | Every static asset was served with `max-age=0`, so repeat visits revalidated every image. | Images/fonts: `max-age` 7 days + `stale-while-revalidate`. CSS/JS: 1 hour, since filenames are not content-hashed. |
+| Medium | AI crawlers were allowed only implicitly through `User-agent: *`. | Name the major search and AI search/assistant agents (OAI-SearchBot, ChatGPT-User, GPTBot, Claude-SearchBot, Claude-User, ClaudeBot, PerplexityBot, Google-Extended, Applebot-Extended, and others) in the same group as `*`. Rules are unchanged. `/verify/` and `/report-update/` stay crawlable so their noindex header stays visible. |
+| Medium | AI systems had to crawl 230+ pages to see the full directory. | Add `/llms-full.txt`: every truck profile (cuisine, home base, price range, recorded contacts, last recorded check, description) and every guide (dates, summary, FAQ Q&A), grouped by region, each with its canonical URL. It is generated from the same data as the pages, sent with `noindex` so it does not compete with canonical HTML in search, and linked from `llms.txt` and `robots.txt`. |
+| Low | No way to tell Bing (which also feeds Copilot and other AI answer engines) about changes without waiting for a recrawl. | Optional IndexNow support: `INDEXNOW_KEY` serves `/<key>.txt`; `npm run indexnow` submits sitemap URLs, with a `--since` filter and a dry-run default. |
+
+New regression checks in `validate:search-readiness` cover named crawlers, the
+llms files (every truck and article present, no unrendered values), gzip on HTML,
+and asset cache lifetimes. All 11 groups pass (231 sitemap pages, 1,269 schema
+entities).
+
+Not done here, because they need production access or owner decisions: generating
+and setting the IndexNow key, submitting to IndexNow and Search Console/Bing
+Webmaster Tools, and measuring field CWV after the compression/caching change.

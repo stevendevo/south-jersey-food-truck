@@ -4,7 +4,8 @@ const assert = require('node:assert/strict');
 const http = require('node:http');
 const https = require('node:https');
 const trucks = require('../data/trucks.json');
-const posts = require('../data/posts.json');
+const { publishedPosts } = require('../published-posts');
+const posts = publishedPosts(require('../data/posts.json'));
 
 const BASE_URL = process.env.DIRECTORY_URL || `http://127.0.0.1:${process.env.PORT || 22333}`;
 const DOMAIN = 'https://southjerseyfoodtruck.com';
@@ -146,6 +147,42 @@ async function validateDiscovery() {
     check(robots.body.includes(`Disallow: ${pathname}`), `robots missing ${pathname} exclusion`);
   }
   check(!/^https?:\/\//m.test(robots.body), 'robots contains a bare URL instead of a directive/comment');
+  for (const agent of ['OAI-SearchBot', 'ChatGPT-User', 'Claude-SearchBot', 'PerplexityBot', 'Google-Extended', 'Bingbot']) {
+    check(new RegExp(`^User-agent:\\s*${agent}\\s*$`, 'mi').test(robots.body), `robots must name AI/search crawler ${agent} explicitly`);
+  }
+  const firstGroup = robots.body.split(/\n\s*\n/).find(block => /^User-agent:/mi.test(block)) || '';
+  check(/Allow:\s*\/\s*$/m.test(firstGroup) && !/^Disallow:\s*\/\s*$/m.test(robots.body), 'named crawlers must share the public Allow rule');
+  for (const pathname of ['/verify/', '/report-update/']) {
+    check(!robots.body.includes(`Disallow: ${pathname}`), `robots must not block ${pathname}; its noindex header must stay visible`);
+  }
+  check(robots.body.includes(`${DOMAIN}/llms-full.txt`), 'robots missing llms-full.txt reference');
+
+  const llmsIndex = await request('/llms.txt');
+  check(llmsIndex.status === 200 && llmsIndex.body.includes(`${DOMAIN}/llms-full.txt`), 'llms.txt must link to llms-full.txt');
+  const llmsFull = await request('/llms-full.txt');
+  check(llmsFull.status === 200 && /text\/plain/.test(llmsFull.headers['content-type']), 'llms-full.txt must return plain text');
+  check(/noindex/.test(llmsFull.headers['x-robots-tag'] || ''), 'llms-full.txt must not compete with canonical HTML in search results');
+  for (const truck of trucks.filter(item => item.slug)) {
+    check(llmsFull.body.includes(`${DOMAIN}/trucks/${truck.slug}\n`), `llms-full.txt missing truck profile ${truck.slug}`);
+  }
+  for (const post of posts.filter(item => item.slug && item.published_at && new Date(item.published_at).getTime() <= Date.now())) {
+    check(llmsFull.body.includes(`${DOMAIN}/blog/${post.slug}\n`), `llms-full.txt missing article ${post.slug}`);
+  }
+  check(!/\bundefined\b|\bnull\b|\[object Object\]/.test(llmsFull.body), 'llms-full.txt contains an unrendered value');
+
+  const compressed = await new Promise((resolve, reject) => {
+    http.get(new URL('/directory', BASE_URL), { headers: { 'accept-encoding': 'gzip' } }, response => {
+      response.resume();
+      response.on('end', () => resolve(response.headers));
+    }).on('error', reject);
+  });
+  requests += 1;
+  check(compressed['content-encoding'] === 'gzip', 'HTML responses must be compressed when the client accepts gzip');
+  const css = await request('/style.css');
+  check(/max-age=[1-9]/.test(css.headers['cache-control'] || ''), 'stylesheets must be cacheable');
+  const image = await request('/opengraph.jpg');
+  check(/max-age=(?:[6-9]\d{5}|\d{7,})/.test(image.headers['cache-control'] || ''), 'images must be cached for at least a week');
+
   const rss = await request('/blog.xml');
   check(rss.status === 200 && /application\/rss\+xml/.test(rss.headers['content-type']), 'RSS must return successful RSS XML');
   const rssItems = [...rss.body.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(match => match[1]);

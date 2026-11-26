@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const compression = require('compression');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -15,6 +16,7 @@ const {
   looksAutomated
 } = require('./form-protection');
 const { deliverEventInquiry } = require('./event-inquiry-delivery');
+const { publishedPosts } = require('./published-posts');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -44,13 +46,8 @@ if (DATA_DIR !== BUNDLED_DATA_DIR) {
 }
 const readJsonData = (filename) => JSON.parse(fs.readFileSync(path.join(DATA_DIR, filename), 'utf8'));
 const trucks = readJsonData('trucks.json');
-// Editorial additions ship with the app bundle so they can be added without
-// replacing the operator-maintained posts on Railway's persistent volume.
-const editorialPosts = require('./data/editorial-guides-2026.json');
 // Drafts and scheduled posts must not leak through routes, feeds, or AI context.
-const posts = [...readJsonData('posts.json'), ...editorialPosts].filter(post =>
-  post.slug && post.published_at && new Date(post.published_at).getTime() <= Date.now()
-);
+const posts = publishedPosts(readJsonData('posts.json'));
 const imageSubmissions = readJsonData('image-submissions.json');
 const assistantService = createAssistantService({ trucks, posts });
 const assistantRate = new Map();
@@ -213,6 +210,9 @@ const CANONICAL_PAGE_PATHS = new Set([
 ]);
 
 // ── Middleware ────────────────────────────────────────────────────────────────
+// Server-rendered directory pages are large, repetitive HTML; gzip
+// compression typically cuts transfer size by 70-85%, which helps LCP on mobile.
+app.use(compression());
 app.use(express.urlencoded({ extended: false, limit: '32kb', parameterLimit: 40 }));
 app.use(express.json({ limit: '32kb' }));
 app.use((req, res, next) => {
@@ -243,7 +243,28 @@ app.use((req, res, next) => {
   next();
 });
 app.get('/healthz', (req, res) => res.type('text').send('ok'));
-app.use(express.static(path.join(__dirname, 'public')));
+
+// IndexNow lets Bing (and the AI answer engines built on its index) and other
+// participating engines learn about changed URLs without waiting for a recrawl.
+// The key is public by design; it only proves the site owner published it.
+const INDEXNOW_KEY = /^[A-Za-z0-9-]{8,128}$/.test(process.env.INDEXNOW_KEY || '') ? process.env.INDEXNOW_KEY : null;
+if (INDEXNOW_KEY) {
+  app.get(`/${INDEXNOW_KEY}.txt`, (req, res) => res.type('text/plain').send(INDEXNOW_KEY));
+}
+
+// Asset filenames are not content-hashed, so caching stays moderate: images
+// change rarely and get a week; CSS/JS revalidate hourly so deploys show up fast.
+const LONG_CACHE_ASSET = /\.(?:webp|png|jpe?g|gif|svg|ico|avif|woff2?)$/i;
+const SHORT_CACHE_ASSET = /\.(?:css|js)$/i;
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders(res, filePath) {
+    if (LONG_CACHE_ASSET.test(filePath)) {
+      res.set('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
+    } else if (SHORT_CACHE_ASSET.test(filePath)) {
+      res.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    }
+  }
+}));
 
 function isSameOriginRequest(req) {
   const origin = req.get('origin');
@@ -992,10 +1013,126 @@ app.get('/llms.txt', (req, res) => {
     'Cite the relevant canonical truck profile or article, not assistant-generated answers. Distinguish operator home base from service area. Confirm current locations, hours, menus, prices, availability, permits, and accessibility directly with operators and authorities. A recorded active check is not a license, insurance certification, endorsement, or guarantee.',
     '',
     '## Discovery',
+    link('Full text index', '/llms-full.txt', 'Every truck profile and published guide in one plain-text file.'),
     link('Sitemap', '/sitemap.xml', 'Canonical public page inventory.'),
     link('RSS feed', '/blog.xml', 'Published article updates.'),
     ''
   ].join('\n'));
+});
+
+// The same public facts as the HTML pages, flattened into one Markdown file so
+// AI systems can read the whole directory without crawling 200+ pages. It adds
+// nothing that is not already published on the linked canonical page.
+function oneLine(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function llmsTruckEntry(truck) {
+  const specialties = Array.isArray(truck.specialties) ? truck.specialties : [];
+  const instagram = truck.instagram ? `https://www.instagram.com/${truck.instagram.replace(/^@/, '')}` : null;
+  const facebook = truck.facebook ? `https://www.facebook.com/${truck.facebook}` : null;
+  const contacts = [
+    truck.website ? `website ${truck.website}` : null,
+    truck.phone ? `phone ${truck.phone}` : null,
+    truck.email ? `email ${truck.email}` : null,
+    instagram ? `Instagram ${instagram}` : null,
+    facebook ? `Facebook ${facebook}` : null
+  ].filter(Boolean);
+  return [
+    `### ${oneLine(truck.name)}`,
+    `- Profile: ${DOMAIN}/trucks/${truck.slug}`,
+    `- Cuisine: ${oneLine(truck.cuisine)}`,
+    `- Home base: ${oneLine(truck.area && truck.city && truck.area.toLowerCase().startsWith(truck.city.toLowerCase())
+      ? truck.area
+      : [truck.city, truck.area].filter(Boolean).join(', '))} (home base, not a service radius)`,
+    truck.price_range ? `- Price range: ${truck.price_range}` : null,
+    specialties.length ? `- Specialties: ${specialties.map(oneLine).join('; ')}` : null,
+    `- Operator contact on record: ${contacts.length ? contacts.join('; ') : 'none recorded; use the profile page'}`,
+    truck.verified && truck.last_verified ? `- Last recorded listing check: ${truck.last_verified}` : null,
+    truck.schedule ? `- Schedule note: ${oneLine(truck.schedule)}` : null,
+    '',
+    oneLine(truck.description || truck.short_description),
+    ''
+  ].filter(line => line !== null).join('\n');
+}
+
+function llmsPostEntry(post) {
+  const faqs = Array.isArray(post.faqs) ? post.faqs : [];
+  const reviewed = postModifiedDate(post);
+  return [
+    `### ${oneLine(post.title)}`,
+    `- URL: ${DOMAIN}/blog/${post.slug}`,
+    `- Published: ${new Date(post.published_at).toISOString().slice(0, 10)}`,
+    reviewed ? `- Last updated: ${new Date(reviewed).toISOString().slice(0, 10)}` : null,
+    post.author ? `- Byline: ${oneLine(post.author)}` : null,
+    '',
+    oneLine(post.seo_description || post.excerpt),
+    ...(faqs.length ? ['', ...faqs.map(faq => `Q: ${oneLine(faq.question)}\nA: ${oneLine(faq.answer)}`)] : []),
+    ''
+  ].filter(line => line !== null).join('\n');
+}
+
+app.get('/llms-full.txt', (req, res) => {
+  const byName = (a, b) => String(a.name).localeCompare(String(b.name));
+  const listed = trucks.filter(truck => truck.slug);
+  const regions = [...new Set(listed.map(truck => truck.area).filter(Boolean))].sort((a, b) => {
+    const aNJ = Object.values(COUNTY_SLUGS).includes(a);
+    const bNJ = Object.values(COUNTY_SLUGS).includes(b);
+    return aNJ === bNJ ? a.localeCompare(b) : aNJ ? -1 : 1;
+  });
+  const countyLinks = Object.entries(COUNTY_SLUGS)
+    .map(([slug, county]) => `- [${county}, NJ food trucks](${DOMAIN}/${slug}-food-trucks)`);
+  const cuisineLinks = Object.entries(ALL_CUISINE_SLUGS)
+    .sort((a, b) => a[1].localeCompare(b[1]))
+    .map(([slug, cuisine]) => `- [${cuisine} food trucks in South Jersey](${DOMAIN}/south-jersey-${slug}-food-trucks)`);
+  const cityLinks = CITY_PAGE_TARGETS
+    .map(({ slug, city, county }) => `- [Food trucks in ${city} (${county})](${DOMAIN}/food-trucks-in-${slug})`);
+  const sortedPosts = posts.slice().sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+  const latest = latestRecordDate([
+    ...listed.map(truck => ({ date: truck.last_verified })),
+    ...posts.map(post => ({ date: postModifiedDate(post) }))
+  ], 'date');
+
+  const body = [
+    '# South Jersey Food Truck — full directory and guide index',
+    '',
+    `> Plain-text copy of the public directory (${listed.length} food truck profiles) and ${posts.length} published guides at ${DOMAIN}. Every fact below also appears on the linked canonical page; cite that page.`,
+    '',
+    latest ? `Most recent recorded listing check or article update: ${new Date(latest).toISOString().slice(0, 10)}.` : null,
+    '',
+    '## How to use this information',
+    '- "Home base" is where an operator is based. It is not a service area or a promise to travel.',
+    '- A "recorded listing check" means the listing was reviewed on that date. It is not a license, insurance certification, endorsement, or proof the truck is operating today.',
+    '- Locations, hours, menus, prices, and availability change. Direct people to the operator to confirm before an event.',
+    '- To hire a truck through this site, use the event inquiry form at ' + `${DOMAIN}/contact` + '.',
+    '',
+    '## Browse pages',
+    '### By county',
+    ...countyLinks,
+    '',
+    '### By city',
+    ...cityLinks,
+    '',
+    '### By cuisine',
+    ...cuisineLinks,
+    '',
+    '## Food truck profiles',
+    '',
+    ...regions.flatMap(region => [
+      `## ${region}${Object.values(COUNTY_SLUGS).includes(region) ? ', NJ' : ''}`,
+      '',
+      ...listed.filter(truck => truck.area === region).sort(byName).map(llmsTruckEntry)
+    ]),
+    '## Guides and articles',
+    '',
+    ...sortedPosts.map(llmsPostEntry)
+  ].filter(line => line !== null).join('\n');
+
+  if (latest) res.set('Last-Modified', new Date(latest).toUTCString());
+  res.type('text/plain; charset=utf-8')
+    .set('Cache-Control', 'public, max-age=0, must-revalidate')
+    .set('X-Robots-Tag', 'noindex, follow')
+    .send(body);
 });
 
 // ── Static pages ──────────────────────────────────────────────────────────────

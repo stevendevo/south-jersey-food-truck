@@ -1,6 +1,7 @@
 'use strict';
 
-const posts = require('../data/posts.json');
+const { publishedPosts } = require('../published-posts');
+const posts = publishedPosts(require('../data/posts.json'));
 
 const REQUEST_TIMEOUT_MS = Number(process.env.SOURCE_URL_TIMEOUT_MS || 15000);
 const CONCURRENCY = 4;
