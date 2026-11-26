@@ -54,7 +54,7 @@ module.exports = function eventsPage({ posts = [], trucks = [] } = {}) {
     posts: section.slugs.map(slug => postBySlug.get(slug)).filter(Boolean)
   }));
   const linkedPosts = sections.flatMap(section => section.posts);
-  const entityId = 'https://southjerseyfoodtruck.com/food-truck-events#event-guides';
+  const entityId = 'https://www.southjerseyfoodtruck.com/food-truck-events#event-guides';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -62,14 +62,14 @@ module.exports = function eventsPage({ posts = [], trucks = [] } = {}) {
     '@id': entityId,
     name: 'South Jersey Food Truck Event Guides',
     description: 'Seasonal and event-planning guides for weddings, corporate events, school functions, markets, festivals, and shore gatherings in South Jersey.',
-    url: 'https://southjerseyfoodtruck.com/food-truck-events',
+    url: 'https://www.southjerseyfoodtruck.com/food-truck-events',
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: linkedPosts.length,
       itemListElement: linkedPosts.map((post, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        url: `https://southjerseyfoodtruck.com/blog/${post.slug}`,
+        url: `https://www.southjerseyfoodtruck.com/blog/${post.slug}`,
         name: post.title
       }))
     }

@@ -8,7 +8,7 @@ module.exports = function contactPage({ success = false, values = {}, formError 
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
     name: 'Contact South Jersey Food Truck',
-    url: 'https://southjerseyfoodtruck.com/contact'
+    url: 'https://www.southjerseyfoodtruck.com/contact'
   };
 
   const heading = 'Rent a Food Truck';

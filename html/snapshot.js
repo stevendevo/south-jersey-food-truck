@@ -16,7 +16,7 @@ module.exports = function snapshotPage({ trucks = [] } = {}) {
   const verified = trucks.filter(t => t.verified).length;
   const localTotal = counties.reduce((total, county) => total + county.trucks.length, 0);
   const outsideTotal = trucks.length - localTotal;
-  const entityId = 'https://southjerseyfoodtruck.com/directory-snapshot#dataset';
+  const entityId = 'https://www.southjerseyfoodtruck.com/directory-snapshot#dataset';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -24,9 +24,9 @@ module.exports = function snapshotPage({ trucks = [] } = {}) {
     '@id': entityId,
     name: 'South Jersey Food Truck Directory Snapshot',
     description: `A snapshot of ${trucks.length} directory records in South Jersey and nearby areas, with ${localTotal} assigned to the seven South Jersey counties and ${outsideTotal} assigned elsewhere.`,
-    url: 'https://southjerseyfoodtruck.com/directory-snapshot',
+    url: 'https://www.southjerseyfoodtruck.com/directory-snapshot',
     citation: `South Jersey Food Truck Directory Snapshot, accessed ${snapshotDate}.`,
-    creator: { '@id': 'https://southjerseyfoodtruck.com/#organization' },
+    creator: { '@id': 'https://www.southjerseyfoodtruck.com/#organization' },
     spatialCoverage: { '@type': 'Place', name: 'South Jersey, New Jersey' },
     variableMeasured: [
       { '@type': 'PropertyValue', name: 'Listed food trucks', value: trucks.length },
@@ -72,7 +72,7 @@ module.exports = function snapshotPage({ trucks = [] } = {}) {
   <h2>How to cite this snapshot</h2>
   <blockquote style="margin:1rem 0;padding:1rem 1.25rem;border-left:3px solid var(--primary);background:rgba(216,72,15,0.05);">
     <p style="margin:0 0 0.5rem;">“South Jersey Food Truck contained ${trucks.length} directory records when accessed ${esc(snapshotDate)}: ${localTotal} assigned to its seven South Jersey county categories and ${outsideTotal} assigned elsewhere.”</p>
-    <cite style="font-size:0.9rem;color:var(--muted);">Source: <a href="https://southjerseyfoodtruck.com/directory-snapshot" style="color:var(--primary);">South Jersey Food Truck Directory Snapshot</a></cite>
+    <cite style="font-size:0.9rem;color:var(--muted);">Source: <a href="https://www.southjerseyfoodtruck.com/directory-snapshot" style="color:var(--primary);">South Jersey Food Truck Directory Snapshot</a></cite>
   </blockquote>
   <p><a href="/directory" class="btn btn-primary">Browse all food trucks</a> <a href="/food-truck-map" class="btn btn-outline">Explore the county map</a></p>
 </div>`;

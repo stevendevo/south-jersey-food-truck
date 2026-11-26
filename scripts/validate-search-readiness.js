@@ -8,7 +8,7 @@ const { publishedPosts } = require('../published-posts');
 const posts = publishedPosts(require('../data/posts.json'));
 
 const BASE_URL = process.env.DIRECTORY_URL || `http://127.0.0.1:${process.env.PORT || 22333}`;
-const DOMAIN = 'https://southjerseyfoodtruck.com';
+const DOMAIN = 'https://www.southjerseyfoodtruck.com';
 const issues = [];
 let requests = 0;
 
@@ -183,6 +183,17 @@ async function validateDiscovery() {
   const image = await request('/opengraph.jpg');
   check(/max-age=(?:[6-9]\d{5}|\d{7,})/.test(image.headers['cache-control'] || ''), 'images must be cached for at least a week');
 
+  for (const host of ['southjerseyfoodtruck.com', 'web-production-34e37.up.railway.app']) {
+    const redirect = await new Promise((resolve, reject) => {
+      http.get(new URL('/directory?q=tacos', BASE_URL), { headers: { host } }, response => {
+        response.resume();
+        resolve(response);
+      }).on('error', reject);
+    });
+    requests += 1;
+    check(redirect.statusCode === 301 && redirect.headers.location === `${DOMAIN}/directory?q=tacos`,
+      `${host} must 301 to the canonical www host`);
+  }
   const rss = await request('/blog.xml');
   check(rss.status === 200 && /application\/rss\+xml/.test(rss.headers['content-type']), 'RSS must return successful RSS XML');
   const rssItems = [...rss.body.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(match => match[1]);

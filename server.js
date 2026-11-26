@@ -21,7 +21,7 @@ const { publishedPosts } = require('./published-posts');
 const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
-const DOMAIN = 'https://southjerseyfoodtruck.com';
+const DOMAIN = 'https://www.southjerseyfoodtruck.com';
 
 function xmlEscape(value) {
   return String(value || '')
@@ -213,6 +213,21 @@ const CANONICAL_PAGE_PATHS = new Set([
 // Server-rendered directory pages are large, repetitive HTML; gzip
 // compression typically cuts transfer size by 70-85%, which helps LCP on mobile.
 app.use(compression());
+
+// www is the canonical host (GoDaddy cannot point the bare domain at Railway,
+// so the apex forwards to www). If the apex or Railway's generated *.up.railway.app
+// host ever reaches this app, send crawlers to the canonical copy instead of
+// serving a duplicate site. Health checks and form posts are left alone.
+const CANONICAL_HOST = new URL(DOMAIN).host;
+const NON_CANONICAL_HOST = /^(?:southjerseyfoodtruck\.com|[a-z0-9-]+\.up\.railway\.app)$/i;
+app.use((req, res, next) => {
+  const host = String(req.hostname || '').toLowerCase();
+  if (['GET', 'HEAD'].includes(req.method) && req.path !== '/healthz' &&
+      host !== CANONICAL_HOST && NON_CANONICAL_HOST.test(host)) {
+    return res.redirect(301, `${DOMAIN}${req.originalUrl}`);
+  }
+  next();
+});
 app.use(express.urlencoded({ extended: false, limit: '32kb', parameterLimit: 40 }));
 app.use(express.json({ limit: '32kb' }));
 app.use((req, res, next) => {

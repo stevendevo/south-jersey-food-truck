@@ -3,7 +3,7 @@ const { esc } = require('../utils');
 const trucks = require('../data/trucks.json');
 const { cityPageTargets } = require('../taxonomy');
 
-const DOMAIN = 'https://southjerseyfoodtruck.com';
+const DOMAIN = 'https://www.southjerseyfoodtruck.com';
 const FOOTER_CITY_PAGES = cityPageTargets(trucks).slice(0, 6);
 const ORGANIZATION_ID = `${DOMAIN}/#organization`;
 // Add a value only after the organization confirms it is public and maintained.

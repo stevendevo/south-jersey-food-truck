@@ -1,6 +1,6 @@
 'use strict';
 
-const DOMAIN = 'https://southjerseyfoodtruck.com';
+const DOMAIN = 'https://www.southjerseyfoodtruck.com';
 
 // County-based records in this directory are in New Jersey; explicit state
 // suffixes describe out-of-state home bases. A home base is not a service radius.

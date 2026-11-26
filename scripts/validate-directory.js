@@ -183,17 +183,17 @@ async function main() {
     fail('sitemap is missing its XML declaration or urlset namespace');
   }
   for (const truck of trucks) {
-    const truckUrl = `https://southjerseyfoodtruck.com/trucks/${truck.slug}`;
+    const truckUrl = `https://www.southjerseyfoodtruck.com/trucks/${truck.slug}`;
     if (!sitemap.body.includes(`<loc>${truckUrl}</loc>`)) {
       fail(`truck detail page is missing from the sitemap: ${truck.slug}`);
     }
   }
   for (const page of ['/', '/directory', '/blog', '/faq', '/about']) {
-    if (!sitemap.body.includes(`<loc>https://southjerseyfoodtruck.com${page}</loc>`)) {
+    if (!sitemap.body.includes(`<loc>https://www.southjerseyfoodtruck.com${page}</loc>`)) {
       fail(`required top-level page is missing from the sitemap: ${page}`);
     }
   }
-  if (!robots.body.includes('Sitemap: https://southjerseyfoodtruck.com/sitemap.xml')) {
+  if (!robots.body.includes('Sitemap: https://www.southjerseyfoodtruck.com/sitemap.xml')) {
     fail('robots.txt does not reference the sitemap URL');
   }
 
@@ -214,7 +214,7 @@ async function main() {
     if (!map.body.includes(`/${slug}-food-trucks`) || !map.body.includes(`${countyCount} truck`)) {
       fail(`${name} map link or live count is missing`);
     }
-    if (!sitemap.body.includes(`https://southjerseyfoodtruck.com/${slug}-food-trucks`)) {
+    if (!sitemap.body.includes(`https://www.southjerseyfoodtruck.com/${slug}-food-trucks`)) {
       fail(`${name} county page is missing from the sitemap`);
     }
   }
@@ -244,8 +244,8 @@ async function main() {
     }
   }
 
-  if (!sitemap.body.includes('https://southjerseyfoodtruck.com/directory-snapshot') ||
-      !sitemap.body.includes('https://southjerseyfoodtruck.com/food-truck-map')) {
+  if (!sitemap.body.includes('https://www.southjerseyfoodtruck.com/directory-snapshot') ||
+      !sitemap.body.includes('https://www.southjerseyfoodtruck.com/food-truck-map')) {
     fail('snapshot or map page is missing from the sitemap');
   }
 

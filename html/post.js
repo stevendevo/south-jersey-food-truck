@@ -4,7 +4,7 @@ const { esc, formatDate, renderMarkdown, seoDescription, imageAsset } = require(
 
 function authorSchema(author) {
   if (!author || author === 'Editorial Team') {
-    return { '@id': 'https://southjerseyfoodtruck.com/#organization' };
+    return { '@id': 'https://www.southjerseyfoodtruck.com/#organization' };
   }
   return {
     '@type': 'Person',
@@ -36,11 +36,11 @@ module.exports = function postPage({ post: p, posts = [] }) {
     .filter(date => !Number.isNaN(date.getTime()))
     .sort((a, b) => b - a)
     .map(date => date.toISOString())[0] || pubDate;
-  const canonicalUrl = `https://southjerseyfoodtruck.com/blog/${p.slug}`;
+  const canonicalUrl = `https://www.southjerseyfoodtruck.com/blog/${p.slug}`;
   const metaDescription = seoDescription(p.seo_description, p.excerpt);
   const articleId = `${canonicalUrl}#article`;
   const heroImage = imageAsset(p.cover_image_url || '/seed/blog_summer_guide.png');
-  const imageUrl = new URL(heroImage.url, 'https://southjerseyfoodtruck.com').href;
+  const imageUrl = new URL(heroImage.url, 'https://www.southjerseyfoodtruck.com').href;
   const citations = [...new Set([...String(p.content || '').matchAll(/\]\((https?:\/\/[^)\s]+)\)/g)].map(match => match[1]))];
   const wordCount = String(p.content || '').trim().split(/\s+/).filter(Boolean).length;
   const readingMinutes = Math.max(1, Math.ceil(wordCount / 220));
@@ -56,7 +56,7 @@ module.exports = function postPage({ post: p, posts = [] }) {
     datePublished: pubDate,
     dateModified: modDate,
     ...(citations.length ? { citation: citations } : {}),
-    isPartOf: { '@id': 'https://southjerseyfoodtruck.com/blog#blog' },
+    isPartOf: { '@id': 'https://www.southjerseyfoodtruck.com/blog#blog' },
     author: authorSchema(p.author),
     articleSection: tags[0] || 'Food Truck Guides',
     keywords: tags,
@@ -66,9 +66,9 @@ module.exports = function postPage({ post: p, posts = [] }) {
     timeRequired: `PT${readingMinutes}M`,
     publisher: {
       '@type': 'Organization',
-      '@id': 'https://southjerseyfoodtruck.com/#organization',
+      '@id': 'https://www.southjerseyfoodtruck.com/#organization',
       name: 'South Jersey Food Truck',
-      url: 'https://southjerseyfoodtruck.com'
+      url: 'https://www.southjerseyfoodtruck.com'
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${canonicalUrl}#webpage` }
   };

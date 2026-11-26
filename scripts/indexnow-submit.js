@@ -13,7 +13,7 @@
 // confirm the submitter controls the site. Generate one with
 //   node -e "console.log(require('crypto').randomUUID().replace(/-/g,''))"
 
-const SITE = process.env.SITE_URL || 'https://southjerseyfoodtruck.com';
+const SITE = process.env.SITE_URL || 'https://www.southjerseyfoodtruck.com';
 const SITEMAP_URL = process.env.SITEMAP_URL || `${SITE}/sitemap.xml`; // override to dry-run locally
 const ENDPOINT = process.env.INDEXNOW_ENDPOINT || 'https://api.indexnow.org/indexnow';
 const KEY = process.env.INDEXNOW_KEY || '';

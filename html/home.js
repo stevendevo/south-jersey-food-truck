@@ -49,7 +49,7 @@ module.exports = function homePage({ trucks, posts }) {
   const cuisineCount = new Set(trucks.map(t => t.cuisine).filter(Boolean)).size;
   const featuredTruckList = {
     '@type': 'ItemList',
-    '@id': 'https://southjerseyfoodtruck.com/#featured-trucks',
+    '@id': 'https://www.southjerseyfoodtruck.com/#featured-trucks',
     name: 'Food Trucks to Explore in South Jersey',
     description: 'A selection of food trucks to explore in South Jersey.',
     numberOfItems: homeTrucks.length,
@@ -75,8 +75,8 @@ module.exports = function homePage({ trucks, posts }) {
       featuredTruckList,
       {
         '@type': 'FAQPage',
-        '@id': 'https://southjerseyfoodtruck.com/#faq',
-        isPartOf: { '@id': 'https://southjerseyfoodtruck.com/#webpage' },
+        '@id': 'https://www.southjerseyfoodtruck.com/#faq',
+        isPartOf: { '@id': 'https://www.southjerseyfoodtruck.com/#webpage' },
         mainEntity: faqs.map(f => ({
           '@type': 'Question',
           name: f.q,
@@ -202,7 +202,7 @@ module.exports = function homePage({ trucks, posts }) {
     title: `Food Trucks in South Jersey — ${totalTrucks} Listings & Catering`,
     desc: `Find food trucks in South Jersey and nearby areas. Compare ${totalTrucks} listings by county and cuisine, contact operators, and plan catering for your event.`,
     canonical: '/',
-    mainEntity: 'https://southjerseyfoodtruck.com/#featured-trucks',
+    mainEntity: 'https://www.southjerseyfoodtruck.com/#featured-trucks',
     websiteSearchAction: true,
     jsonLd,
     bodyClass: 'brand-home',
