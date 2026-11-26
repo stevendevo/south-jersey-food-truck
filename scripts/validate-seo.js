@@ -93,7 +93,7 @@ async function validateBrandAssets(homeHtml) {
     'href="/brand-refresh.css"',
     'src="/brand/south-jersey-food-truck-mark.webp"',
     'aria-controls="navMobile"',
-    'content="https://southjerseyfoodtruck.com/opengraph.jpg"',
+    'content="https://www.southjerseyfoodtruck.com/opengraph.jpg"',
     'South Jersey Food Truck brand preview'
   ]) {
     if (!homeHtml.includes(requiredTag)) {
@@ -152,7 +152,7 @@ function validateOrganizationContactRules() {
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'Customer Support',
-        url: 'https://southjerseyfoodtruck.com/contact',
+        url: 'https://www.southjerseyfoodtruck.com/contact',
         ...contact
       }
     };
@@ -409,7 +409,7 @@ async function main() {
     !checklist.body.includes('id="checklist-1-1"') ||
     !checklist.body.includes('href="/contact"') ||
     !checklist.body.includes('href="/directory"') ||
-    !sitemap.body.includes('https://southjerseyfoodtruck.com/food-truck-event-checklist')
+    !sitemap.body.includes('https://www.southjerseyfoodtruck.com/food-truck-event-checklist')
   ) {
     fail('event checklist page is missing required content, CTAs, or sitemap coverage');
   }
@@ -419,16 +419,16 @@ async function main() {
   );
   const website = homeNodes.find(schema =>
     schema['@type'] === 'WebSite' &&
-    schema.url === 'https://southjerseyfoodtruck.com'
+    schema.url === 'https://www.southjerseyfoodtruck.com'
   );
   const searchAction = website?.potentialAction;
   const organization = homeNodes.find(schema =>
     schema['@type'] === 'Organization' &&
-    schema['@id'] === 'https://southjerseyfoodtruck.com/#organization'
+    schema['@id'] === 'https://www.southjerseyfoodtruck.com/#organization'
   );
   const localBusiness = homeNodes.find(schema =>
     schema['@type'] === 'LocalBusiness' &&
-    schema['@id'] === 'https://southjerseyfoodtruck.com/#organization'
+    schema['@id'] === 'https://www.southjerseyfoodtruck.com/#organization'
   );
   const isHttpsUrl = value => {
     try {
@@ -446,22 +446,22 @@ async function main() {
   };
   const hasTrustedOrganizationDetails = schema =>
     schema?.name === 'South Jersey Food Truck' &&
-    schema?.url === 'https://southjerseyfoodtruck.com' &&
-    schema?.logo === 'https://southjerseyfoodtruck.com/brand/south-jersey-food-truck-mark.webp' &&
+    schema?.url === 'https://www.southjerseyfoodtruck.com' &&
+    schema?.logo === 'https://www.southjerseyfoodtruck.com/brand/south-jersey-food-truck-mark.webp' &&
     isHttpsUrl(schema.logo) &&
     Array.isArray(schema.sameAs) &&
     schema.sameAs.length === 1 &&
     schema.sameAs.every(isTrustedSocialUrl) &&
     schema.contactPoint?.['@type'] === 'ContactPoint' &&
     schema.contactPoint.contactType === 'Customer Support' &&
-    schema.contactPoint.url === 'https://southjerseyfoodtruck.com/contact' &&
+    schema.contactPoint.url === 'https://www.southjerseyfoodtruck.com/contact' &&
     isHttpsUrl(schema.contactPoint.url) &&
     hasTrustedOrganizationContact(schema);
   validateOrganizationContactRules();
   if (
     !website ||
     searchAction?.['@type'] !== 'SearchAction' ||
-    searchAction.target !== 'https://southjerseyfoodtruck.com/directory?q={search_term_string}' ||
+    searchAction.target !== 'https://www.southjerseyfoodtruck.com/directory?q={search_term_string}' ||
     searchAction['query-input'] !== 'required name=search_term_string' ||
     !organization ||
     localBusiness ||
@@ -473,11 +473,11 @@ async function main() {
 
   const featuredList = homeNodes.find(schema =>
     schema['@type'] === 'ItemList' &&
-    schema['@id'] === 'https://southjerseyfoodtruck.com/#featured-trucks'
+    schema['@id'] === 'https://www.southjerseyfoodtruck.com/#featured-trucks'
   );
   const renderedFeaturedPaths = [...home.body.matchAll(/<a href="(\/trucks\/[^"]+)" class="truck-card"/g)]
     .map(match => match[1]);
-  const expectedFeaturedUrls = renderedFeaturedPaths.map(pathname => `https://southjerseyfoodtruck.com${pathname}`);
+  const expectedFeaturedUrls = renderedFeaturedPaths.map(pathname => `https://www.southjerseyfoodtruck.com${pathname}`);
   if (
     !featuredList ||
     featuredList.numberOfItems !== renderedFeaturedPaths.length ||
@@ -550,9 +550,9 @@ async function main() {
     const pageSchemas = schemas(page.body);
     const itemList = pageSchemas.find(schema =>
       schema['@type'] === 'ItemList' &&
-      schema['@id'] === `https://southjerseyfoodtruck.com${pathname}#item-list`
+      schema['@id'] === `https://www.southjerseyfoodtruck.com${pathname}#item-list`
     );
-    const canonical = `<link rel="canonical" href="https://southjerseyfoodtruck.com${pathname}" />`;
+    const canonical = `<link rel="canonical" href="https://www.southjerseyfoodtruck.com${pathname}" />`;
     if (
       !itemList ||
       itemList.numberOfItems !== cityTrucks.length ||
@@ -560,7 +560,7 @@ async function main() {
       !page.body.includes(`<h1 style="margin-bottom:0.3rem;">Food Trucks in ${city}, NJ</h1>`) ||
       !page.body.includes(`${city}, ${county}`) ||
       !page.body.includes(canonical) ||
-      !sitemap.body.includes(`https://southjerseyfoodtruck.com${pathname}`)
+      !sitemap.body.includes(`https://www.southjerseyfoodtruck.com${pathname}`)
     ) {
       fail(`city page is missing unique listing, schema, canonical, or sitemap coverage: ${pathname}`);
     }
@@ -596,13 +596,13 @@ async function main() {
     const articleSchemas = schemas(page.body);
     const article = articleSchemas.find(schema => schema['@type'] === 'BlogPosting');
     const faq = articleSchemas.find(schema => schema['@type'] === 'FAQPage');
-    const canonical = `<link rel="canonical" href="https://southjerseyfoodtruck.com/blog/${post.slug}" />`;
+    const canonical = `<link rel="canonical" href="https://www.southjerseyfoodtruck.com/blog/${post.slug}" />`;
     if (!article || !page.body.includes(canonical)) fail(`missing article schema or canonical: ${post.slug}`);
     if ((post.faqs?.length || 0) > 0 && (!faq || faq.mainEntity?.length !== post.faqs.length)) {
       fail(`FAQ schema does not match visible FAQ data: ${post.slug}`);
     }
     if (!page.body.includes('related-articles-heading')) fail(`missing related article section: ${post.slug}`);
-    if (!sitemap.body.includes(`https://southjerseyfoodtruck.com/blog/${post.slug}`)) {
+    if (!sitemap.body.includes(`https://www.southjerseyfoodtruck.com/blog/${post.slug}`)) {
       fail(`article missing from sitemap: ${post.slug}`);
     }
     if (post.slug === 'how-to-hire-a-food-truck-south-jersey' && !page.body.includes('href="/food-truck-event-checklist"')) {
@@ -635,7 +635,7 @@ async function main() {
     const truckSchemas = schemas(page.body);
     const establishment = truckSchemas.find(schema => schema['@type'] === 'FoodEstablishment');
     const breadcrumb = truckSchemas.find(schema => schema['@type'] === 'BreadcrumbList');
-    const canonicalUrl = `https://southjerseyfoodtruck.com/trucks/${truck.slug}`;
+    const canonicalUrl = `https://www.southjerseyfoodtruck.com/trucks/${truck.slug}`;
     if (!establishment || !breadcrumb) {
       fail(`missing truck or breadcrumb schema: ${truck.slug}`);
     }
@@ -664,7 +664,7 @@ async function main() {
 
     const assetUrl = imageAsset(truck.image_url).url;
     const expectedImage = hasVerifiedTruckImage(truck)
-      ? (assetUrl.startsWith('http') ? assetUrl : `https://southjerseyfoodtruck.com${assetUrl}`)
+      ? (assetUrl.startsWith('http') ? assetUrl : `https://www.southjerseyfoodtruck.com${assetUrl}`)
       : null;
     if (expectedImage && establishment.image !== expectedImage) {
       fail(`verified truck image is missing from schema: ${truck.slug}`);

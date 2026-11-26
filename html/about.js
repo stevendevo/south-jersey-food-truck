@@ -77,7 +77,7 @@ module.exports = function aboutPage({ trucks = [] } = {}) {
     title: 'About — South Jersey Food Truck Directory',
     desc: 'Learn how South Jersey Food Truck organizes local listings, records checks, identifies sponsored placement, and handles editorial content and corrections.',
     canonical: '/about',
-    mainEntity: 'https://southjerseyfoodtruck.com/#organization',
+    mainEntity: 'https://www.southjerseyfoodtruck.com/#organization',
     jsonLd,
     content
   });

@@ -68,14 +68,14 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
     '@graph': [
       {
         '@type': 'ItemList',
-        '@id': 'https://southjerseyfoodtruck.com/food-trucks-in-south-jersey#guide',
+        '@id': 'https://www.southjerseyfoodtruck.com/food-trucks-in-south-jersey#guide',
         name: 'South Jersey county food truck directories',
         numberOfItems: COUNTY_DATA.length,
         itemListElement: COUNTY_DATA.map((county, index) => ({
           '@type': 'ListItem',
           position: index + 1,
           name: `${county.name} Food Trucks`,
-          url: `https://southjerseyfoodtruck.com/${county.slug}-food-trucks`
+          url: `https://www.southjerseyfoodtruck.com/${county.slug}-food-trucks`
         }))
       },
       ...(featured.length > 0 ? [{
@@ -327,7 +327,7 @@ module.exports = function hubPage({ trucks, cuisines, countyCuisineCombos = [], 
     title: 'Food Trucks in South Jersey — County & Cuisine Guide',
     desc: `Research ${total} food truck records in South Jersey and nearby areas. Browse county and cuisine pages, compare operators, and plan questions before booking.`,
     canonical: '/food-trucks-in-south-jersey',
-    mainEntity: 'https://southjerseyfoodtruck.com/food-trucks-in-south-jersey#guide',
+    mainEntity: 'https://www.southjerseyfoodtruck.com/food-trucks-in-south-jersey#guide',
     about: { '@type': 'Place', name: 'South Jersey, New Jersey' },
     breadcrumb: [
       { name: 'Home', url: '/' },

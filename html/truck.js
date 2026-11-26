@@ -87,8 +87,8 @@ module.exports = function truckPage({ truck: t, nearbyTrucks = [], cityPageTarge
     t.instagram ? `https://www.instagram.com/${t.instagram.replace('@', '')}` : null,
     t.facebook ? `https://www.facebook.com/${t.facebook}` : null
   ].filter(Boolean);
-  const imageUrl = imgSrc ? (imgSrc.startsWith('http') ? imgSrc : `https://southjerseyfoodtruck.com${imgSrc}`) : null;
-  const entityId = `https://southjerseyfoodtruck.com/trucks/${t.slug}#food-establishment`;
+  const imageUrl = imgSrc ? (imgSrc.startsWith('http') ? imgSrc : `https://www.southjerseyfoodtruck.com${imgSrc}`) : null;
+  const entityId = `https://www.southjerseyfoodtruck.com/trucks/${t.slug}#food-establishment`;
   const openingHoursSpecification = getOpeningHoursSpecification(t);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -98,7 +98,7 @@ module.exports = function truckPage({ truck: t, nearbyTrucks = [], cityPageTarge
     description: t.description || t.short_description,
     servesCuisine: t.cuisine,
     ...(t.price_range ? { priceRange: t.price_range } : {}),
-    url: `https://southjerseyfoodtruck.com/trucks/${t.slug}`,
+    url: `https://www.southjerseyfoodtruck.com/trucks/${t.slug}`,
     image: imageUrl || undefined,
     telephone: t.phone || undefined,
     email: t.email || undefined,
@@ -240,7 +240,7 @@ ${renderTruckImage(t, { className: 'truck-hero-img', wrapperClass: 'truck-brand-
     og: { image: imageUrl || undefined, imageAlt: t.image_alt || undefined, type: 'website' },
     mainEntity: entityId,
     imageObject: imageUrl ? {
-      id: `https://southjerseyfoodtruck.com/trucks/${t.slug}#primary-image`,
+      id: `https://www.southjerseyfoodtruck.com/trucks/${t.slug}#primary-image`,
       url: imageUrl,
       caption: t.image_alt || `${t.name} food truck serving ${t.cuisine} in ${location}`
     } : undefined,

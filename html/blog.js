@@ -21,32 +21,32 @@ module.exports = function blogPage({ posts }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': ['Blog', 'CollectionPage'],
-    '@id': 'https://southjerseyfoodtruck.com/blog#blog',
+    '@id': 'https://www.southjerseyfoodtruck.com/blog#blog',
     name: 'South Jersey Food Truck Blog',
-    url: 'https://southjerseyfoodtruck.com/blog',
+    url: 'https://www.southjerseyfoodtruck.com/blog',
     description: 'Guides, truck profiles, event recaps, and tips for food truck fans and event planners in South Jersey.',
     mainEntity: {
       '@type': 'ItemList',
-      '@id': 'https://southjerseyfoodtruck.com/blog#article-list',
+      '@id': 'https://www.southjerseyfoodtruck.com/blog#article-list',
       numberOfItems: sortedPosts.length,
       itemListElement: sortedPosts.map((p, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        url: `https://southjerseyfoodtruck.com/blog/${p.slug}`,
+        url: `https://www.southjerseyfoodtruck.com/blog/${p.slug}`,
         name: p.title
       }))
     },
     blogPost: sortedPosts.map(p => ({
       '@type': 'BlogPosting',
-      '@id': `https://southjerseyfoodtruck.com/blog/${p.slug}#article`,
+      '@id': `https://www.southjerseyfoodtruck.com/blog/${p.slug}#article`,
       headline: p.title,
       description: p.seo_description || p.excerpt,
-      url: `https://southjerseyfoodtruck.com/blog/${p.slug}`,
-      image: new URL(imageAsset(p.cover_image_url || '/seed/blog_summer_guide.png').url, 'https://southjerseyfoodtruck.com').href,
+      url: `https://www.southjerseyfoodtruck.com/blog/${p.slug}`,
+      image: new URL(imageAsset(p.cover_image_url || '/seed/blog_summer_guide.png').url, 'https://www.southjerseyfoodtruck.com').href,
       datePublished: new Date(p.published_at).toISOString(),
       dateModified: [p.updated_at, p.guidance_reviewed_at, p.published_at].filter(Boolean).map(value => new Date(value)).filter(date => !Number.isNaN(date.getTime())).sort((a, b) => b - a)[0]?.toISOString(),
-      author: !p.author || p.author === 'Editorial Team' ? { '@id': 'https://southjerseyfoodtruck.com/#organization' } : { '@type': 'Person', name: p.author },
-      mainEntityOfPage: { '@type': 'WebPage', '@id': `https://southjerseyfoodtruck.com/blog/${p.slug}#webpage` }
+      author: !p.author || p.author === 'Editorial Team' ? { '@id': 'https://www.southjerseyfoodtruck.com/#organization' } : { '@type': 'Person', name: p.author },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': `https://www.southjerseyfoodtruck.com/blog/${p.slug}#webpage` }
     }))
   };
 
@@ -69,7 +69,7 @@ module.exports = function blogPage({ posts }) {
     title: 'South Jersey Food Truck Blog — Guides, Profiles & Event Recaps',
     desc: 'Food truck guides, operator profiles, festival recaps, and booking tips for South Jersey. Updated regularly with local content across Camden, Burlington, Cape May, and Atlantic counties.',
     canonical: '/blog',
-    mainEntity: 'https://southjerseyfoodtruck.com/blog#blog',
+    mainEntity: 'https://www.southjerseyfoodtruck.com/blog#blog',
     about: { '@type': 'Thing', name: 'South Jersey food truck guides and articles' },
     breadcrumb: [
       { name: 'Home', url: '/' },

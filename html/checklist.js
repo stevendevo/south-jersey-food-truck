@@ -182,7 +182,7 @@ function createChecklistPdf() {
 
   function linkText(item, x, top, size, color = PDF.orange) {
     text(item.label, x, top, size, color, 'F2');
-    addLink(`https://southjerseyfoodtruck.com${item.href}`, x, top - 2, item.label.length * size * 0.52, size + 5);
+    addLink(`https://www.southjerseyfoodtruck.com${item.href}`, x, top - 2, item.label.length * size * 0.52, size + 5);
   }
 
   function footer() {
@@ -311,7 +311,7 @@ function createChecklistPdf() {
 }
 
 module.exports = function checklistPage() {
-  const entityId = 'https://southjerseyfoodtruck.com/food-truck-event-checklist#checklist';
+  const entityId = 'https://www.southjerseyfoodtruck.com/food-truck-event-checklist#checklist';
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',

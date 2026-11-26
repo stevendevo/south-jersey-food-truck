@@ -25,7 +25,7 @@ test('directory schema covers every visible record and preserves out-of-state ho
   assert.equal(list.itemListElement.length, trucks.length);
   for (const [index, listing] of trucks.entries()) {
     const item = list.itemListElement[index].item;
-    assert.equal(item['@id'], `https://southjerseyfoodtruck.com/trucks/${listing.slug}#food-establishment`);
+    assert.equal(item['@id'], `https://www.southjerseyfoodtruck.com/trucks/${listing.slug}#food-establishment`);
     assert.ok(html.includes(`href="/trucks/${listing.slug}"`));
     if (listing.area.endsWith(', PA')) assert.equal(item.address.addressRegion, 'PA');
   }

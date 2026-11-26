@@ -28,8 +28,8 @@ Disallow: /healthz
 # /verify/ and /report-update/ stay crawlable on purpose: they send
 # X-Robots-Tag noindex, which a crawler can only see if it may fetch them.
 
-Sitemap: https://southjerseyfoodtruck.com/sitemap.xml
+Sitemap: https://www.southjerseyfoodtruck.com/sitemap.xml
 
-# Blog update feed: https://southjerseyfoodtruck.com/blog.xml
-# AI reading guide: https://southjerseyfoodtruck.com/llms.txt
-# Full plain-text directory and guide index: https://southjerseyfoodtruck.com/llms-full.txt
+# Blog update feed: https://www.southjerseyfoodtruck.com/blog.xml
+# AI reading guide: https://www.southjerseyfoodtruck.com/llms.txt
+# Full plain-text directory and guide index: https://www.southjerseyfoodtruck.com/llms-full.txt

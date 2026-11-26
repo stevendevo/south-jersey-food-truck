@@ -42,7 +42,7 @@ module.exports = function directoryPage({ trucks }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    '@id': 'https://southjerseyfoodtruck.com/directory#item-list',
+    '@id': 'https://www.southjerseyfoodtruck.com/directory#item-list',
     name: 'South Jersey Food Truck Directory',
     description: `Directory of ${total} food truck listings in South Jersey and nearby areas.`,
     numberOfItems: total,
@@ -152,7 +152,7 @@ ${grilly ? `<div class="container" style="padding-top:2rem;">
     title: `South Jersey Food Truck Directory — ${total} Listings`,
     desc: `Browse ${total} food truck listings in South Jersey and nearby areas. Compare cuisines, recorded home bases and operator links. Filter by county or truck name.`,
     canonical: '/directory',
-    mainEntity: 'https://southjerseyfoodtruck.com/directory#item-list',
+    mainEntity: 'https://www.southjerseyfoodtruck.com/directory#item-list',
     about: { '@type': 'Thing', name: 'South Jersey food trucks' },
     jsonLd,
     content

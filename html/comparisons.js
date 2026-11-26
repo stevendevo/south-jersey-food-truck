@@ -8,7 +8,7 @@ module.exports = function comparisonsPage({ trucks = [], posts = [] } = {}) {
   const postBySlug = new Map(posts.map(post => [post.slug, post]));
   const traditionalPost = postBySlug.get('food-truck-catering-vs-traditional-catering');
   const numberPost = postBySlug.get('how-many-food-trucks-for-an-event-south-jersey');
-  const entityId = 'https://southjerseyfoodtruck.com/food-truck-comparisons#comparison-guide';
+  const entityId = 'https://www.southjerseyfoodtruck.com/food-truck-comparisons#comparison-guide';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -16,14 +16,14 @@ module.exports = function comparisonsPage({ trucks = [], posts = [] } = {}) {
     '@id': entityId,
     name: 'South Jersey Food Truck Comparisons',
     description: 'Practical comparisons for choosing food truck catering, traditional catering, and the right number of trucks for a South Jersey event.',
-    url: 'https://southjerseyfoodtruck.com/food-truck-comparisons',
+    url: 'https://www.southjerseyfoodtruck.com/food-truck-comparisons',
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: [traditionalPost, numberPost].filter(Boolean).length,
       itemListElement: [traditionalPost, numberPost].filter(Boolean).map((post, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        url: `https://southjerseyfoodtruck.com/blog/${post.slug}`,
+        url: `https://www.southjerseyfoodtruck.com/blog/${post.slug}`,
         name: post.title
       }))
     }

@@ -40,7 +40,7 @@ module.exports = function cityPage({ city, county, slug, trucks, cityPages = [] 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    '@id': `https://southjerseyfoodtruck.com${canonical}#item-list`,
+    '@id': `https://www.southjerseyfoodtruck.com${canonical}#item-list`,
     name: `Food Trucks in ${city}, New Jersey`,
     description: `Directory of ${total} food trucks based in ${city}, ${county}, New Jersey, with cuisine and event-planning details.`,
     numberOfItems: total,
@@ -105,7 +105,7 @@ ${relatedCities.length ? `<section class="directory-browse-links city-related-li
     title,
     desc,
     canonical,
-    mainEntity: `https://southjerseyfoodtruck.com${canonical}#item-list`,
+    mainEntity: `https://www.southjerseyfoodtruck.com${canonical}#item-list`,
     about: { '@type': 'City', name: `${city}, New Jersey` },
     breadcrumb: [
       { name: 'Home', url: '/' },

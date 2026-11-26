@@ -18,7 +18,7 @@ module.exports = function mapPage({ trucks = [] } = {}) {
     const cuisines = [...new Set(listings.map(t => t.cuisine).filter(Boolean))].slice(0, 3);
     return { ...county, listings, cuisines };
   });
-  const entityId = 'https://southjerseyfoodtruck.com/food-truck-map#county-list';
+  const entityId = 'https://www.southjerseyfoodtruck.com/food-truck-map#county-list';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -32,7 +32,7 @@ module.exports = function mapPage({ trucks = [] } = {}) {
       item: {
         '@type': 'AdministrativeArea',
         name: `${county.name}, New Jersey`,
-        url: `https://southjerseyfoodtruck.com/${county.slug}-food-trucks`
+        url: `https://www.southjerseyfoodtruck.com/${county.slug}-food-trucks`
       }
     }))
   };

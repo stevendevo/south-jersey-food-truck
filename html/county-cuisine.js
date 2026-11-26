@@ -32,7 +32,7 @@ module.exports = function countyCuisinePage({ county, countySlug, cuisine, cSlug
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    '@id': `https://southjerseyfoodtruck.com${canonical}#item-list`,
+    '@id': `https://www.southjerseyfoodtruck.com${canonical}#item-list`,
     name: `${cuisine} Food Trucks in ${county}, NJ`,
     description: `Find ${total} ${cuisine} food truck${total !== 1 ? 's' : ''} serving ${county}, NJ — available for events, catering, weddings, and corporate parties.`,
     numberOfItems: total,
@@ -124,7 +124,7 @@ ${otherCountiesHtml}
     title,
     desc,
     canonical,
-    mainEntity: `https://southjerseyfoodtruck.com${canonical}#item-list`,
+    mainEntity: `https://www.southjerseyfoodtruck.com${canonical}#item-list`,
     about: { '@type': 'Thing', name: `${cuisine} food trucks in ${county}, New Jersey` },
     breadcrumb: [
       { name: 'Home', url: '/' },

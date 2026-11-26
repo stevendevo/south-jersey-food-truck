@@ -41,7 +41,7 @@ module.exports = function cuisinePage({ cuisine, slug, trucks }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    '@id': `https://southjerseyfoodtruck.com/south-jersey-${slug}-food-trucks#item-list`,
+    '@id': `https://www.southjerseyfoodtruck.com/south-jersey-${slug}-food-trucks#item-list`,
     name: `${cuisine} Food Trucks in South Jersey`,
     description: `Find ${total} ${cuisine} food trucks serving South Jersey — available for events, catering, weddings, and corporate parties.`,
     numberOfItems: total,
@@ -96,7 +96,7 @@ module.exports = function cuisinePage({ cuisine, slug, trucks }) {
     title,
     desc,
     canonical: `/south-jersey-${slug}-food-trucks`,
-    mainEntity: `https://southjerseyfoodtruck.com/south-jersey-${slug}-food-trucks#item-list`,
+    mainEntity: `https://www.southjerseyfoodtruck.com/south-jersey-${slug}-food-trucks#item-list`,
     about: { '@type': 'Thing', name: `${cuisine} food trucks` },
     breadcrumb: [
       { name: 'Home', url: '/' },
