@@ -65,7 +65,7 @@ function imageUrl(value) {
   }
 }
 
-function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'index, follow', jsonLd, breadcrumb, mainEntity, about, imageObject, websiteSearchAction = false, content, bodyClass = '', extraHead = '' }) {
+function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'index, follow', jsonLd, breadcrumb, mainEntity, about, imageObject, content, bodyClass = '', extraHead = '' }) {
   const canonUrl = pageUrl(canonical);
   const defaultImage = `${DOMAIN}/opengraph.jpg`;
   const ogImg = imageUrl(og.image) || defaultImage;
@@ -84,14 +84,7 @@ function layout({ title, desc, canonical, og = {}, articleMeta = {}, robots = 'i
         url: DOMAIN,
         description: 'A directory for finding and contacting food trucks in South Jersey and nearby areas.',
         publisher: { '@id': ORGANIZATION_ID },
-        inLanguage: 'en-US',
-        ...(websiteSearchAction ? {
-          potentialAction: {
-            '@type': 'SearchAction',
-            target: `${DOMAIN}/directory?q={search_term_string}`,
-            'query-input': 'required name=search_term_string'
-          }
-        } : {})
+        inLanguage: 'en-US'
       },
       {
         ...organizationSchema(),
