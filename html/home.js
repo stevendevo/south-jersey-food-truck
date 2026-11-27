@@ -104,6 +104,11 @@ module.exports = function homePage({ trucks, posts }) {
       <p class="brand-home-eyebrow">A better way to eat local <span aria-hidden="true">&middot;</span> NJ</p>
       <h1>Find <span>food trucks</span><br />in South Jersey.</h1>
       <p class="brand-home-lead">South Jersey&rsquo;s rolling kitchens, in one sharp little directory.</p>
+      <form class="hero-search" id="heroSearchForm" action="/directory" method="get">
+        <label class="sr-only" for="heroSearchInput">Search trucks, cuisines, or counties</label>
+        <input type="search" id="heroSearchInput" name="q" placeholder="Search trucks, cuisines, or counties" autocomplete="off" />
+        <button type="submit">Start exploring <span aria-hidden="true">&rarr;</span></button>
+      </form>
       <nav class="hero-chips" aria-label="Browse food trucks by county or cuisine">
         <div class="hero-chip-group">
           <span class="hero-chip-label" id="heroCountyLabel">By county</span>
@@ -224,6 +229,7 @@ module.exports = function homePage({ trucks, posts }) {
     desc: `Find food trucks in South Jersey and nearby areas. Compare ${totalTrucks} listings by county and cuisine, contact operators, and plan catering for your event.`,
     canonical: '/',
     mainEntity: 'https://www.southjerseyfoodtruck.com/#featured-trucks',
+    websiteSearchAction: true,
     jsonLd,
     bodyClass: 'brand-home',
     content
