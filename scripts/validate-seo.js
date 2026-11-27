@@ -460,12 +460,15 @@ async function main() {
   validateOrganizationContactRules();
   if (
     !website ||
-    searchAction ||
+    searchAction?.['@type'] !== 'SearchAction' ||
+    searchAction.target !== 'https://www.southjerseyfoodtruck.com/directory?q={search_term_string}' ||
+    searchAction['query-input'] !== 'required name=search_term_string' ||
     !organization ||
     localBusiness ||
     !hasTrustedOrganizationDetails(organization) ||
+    !home.body.includes('<form class="hero-search" id="heroSearchForm" action="/directory" method="get">') ||
     !home.body.includes('<nav class="hero-chips"') ||
-    /heroSearch|SearchAction/.test(home.body)
+    home.body.indexOf('<form class="hero-search"') > home.body.indexOf('<nav class="hero-chips"')
   ) {
     fail('homepage must describe one Organization, without an unsupported LocalBusiness identity or unverified contact details');
   }

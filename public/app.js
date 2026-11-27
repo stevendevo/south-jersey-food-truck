@@ -391,6 +391,15 @@ function toggleNav() {
 
   restoreDirectoryState();
 
+  // Hero search redirect
+  var heroForm = document.getElementById('heroSearchForm');
+  if (heroForm) {
+    heroForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var val = document.getElementById('heroSearchInput').value.trim();
+      window.location.href = '/directory' + (val ? '?q=' + encodeURIComponent(val) : '');
+    });
+  }
 }());
 
 /* ---- FAQ accordion ---- */
