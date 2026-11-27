@@ -413,6 +413,18 @@ strong { font-weight: 700; color: var(--text); }
   outline: none; color: var(--text);
 }
 .directory-search input:focus { border-color: var(--primary); }
+.directory-filters { margin-bottom: 0.75rem; }
+.directory-filters > summary {
+  display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
+  list-style: none; padding: 0.4rem 0.9rem; margin-bottom: 0.75rem;
+  border: 1px solid var(--border); border-radius: 999px;
+  font-size: 0.8rem; font-weight: 600; color: var(--text); background: var(--white);
+}
+.directory-filters > summary::-webkit-details-marker { display: none; }
+.directory-filters > summary::after { content: "+"; font-weight: 700; color: var(--primary); }
+.directory-filters[open] > summary::after { content: "\2212"; }
+.directory-filters > summary:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.directory-about { padding-top: 2.5rem; }
 .filter-row { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
 .filter-label {
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
