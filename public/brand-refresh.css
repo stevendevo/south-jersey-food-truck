@@ -1351,9 +1351,15 @@ body.brand-home .brand-home-feature-image {
   position: relative;
   align-self: stretch;
   height: auto;
-  min-height: 96px;
+  min-height: 84px;
   overflow: hidden;
-  background: var(--brand-paper-2);
+  background: #000;
+}
+
+body.brand-home .brand-home-feature-image picture {
+  position: absolute;
+  inset: 0;
+  display: block;
 }
 
 body.brand-home .brand-home-feature-image .truck-image-frame {
@@ -1363,12 +1369,13 @@ body.brand-home .brand-home-feature-image .truck-image-frame {
   height: 100%;
 }
 
-body.brand-home .brand-home-feature-image .brand-truck-photo {
+/* Phones show the Grilly Cheese wordmark on the truck's black side panel */
+body.brand-home .brand-home-feature-image img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 body.brand-home .brand-home-feature .truck-image-label {
@@ -1404,7 +1411,8 @@ body.brand-home .brand-home-feature-meta {
   white-space: nowrap;
 }
 
-body.brand-home .brand-home-feature p:not(.brand-home-feature-meta) {
+body.brand-home .brand-home-feature p:not(.brand-home-feature-meta),
+body.brand-home .brand-home-feature .brand-home-feature-meta {
   display: none;
 }
 
@@ -1449,17 +1457,23 @@ body.brand-home .brand-home-feature h2 a:hover {
     height: 190px;
     min-height: 0;
     align-self: auto;
+    background: var(--brand-paper-2);
   }
 
-  body.brand-home .brand-home-feature-image .truck-image-frame,
-  body.brand-home .brand-home-feature-image .brand-truck-photo {
+  body.brand-home .brand-home-feature-image picture {
+    position: static;
+  }
+
+  body.brand-home .brand-home-feature-image .truck-image-frame {
     position: static;
     inset: auto;
   }
 
-  body.brand-home .brand-home-feature-image .brand-truck-photo {
+  body.brand-home .brand-home-feature-image img {
+    position: static;
     display: block;
     height: 190px;
+    object-fit: cover;
   }
 
   body.brand-home .brand-home-feature-body {
@@ -1471,7 +1485,8 @@ body.brand-home .brand-home-feature h2 a:hover {
     font-size: 22px;
   }
 
-  body.brand-home .brand-home-feature-meta {
+  body.brand-home .brand-home-feature .brand-home-feature-meta {
+    display: block;
     margin: 0 0 8px;
     overflow: visible;
     font-size: 11px;
