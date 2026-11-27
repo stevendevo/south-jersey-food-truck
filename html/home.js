@@ -130,6 +130,18 @@ module.exports = function homePage({ trucks, posts }) {
         <div class="brand-home-stat"><strong>${cuisineCount}</strong><span>Cuisine categories</span></div>
       </div>
     </div>
+    ${grilly ? `<aside class="brand-home-feature" aria-labelledby="heroFeatureTitle">
+      <span class="brand-home-feature-badge">&#9733; Featured sponsor</span>
+      <div class="brand-home-feature-image brand-truck-image-wrap">
+        ${renderTruckImage(grilly, { className: 'brand-truck-photo', width: 700, height: 390, loading: 'eager', context: `food truck serving ${grilly.cuisine} in ${grilly.city}` })}
+      </div>
+      <div class="brand-home-feature-body">
+        <h2 id="heroFeatureTitle"><a href="/trucks/${esc(grilly.slug)}">${esc(grilly.name)}</a></h2>
+        <p class="brand-home-feature-meta">${esc(grilly.cuisine || 'Food truck')} &middot; ${esc(grilly.area && grilly.area.toLowerCase().startsWith(grilly.city.toLowerCase()) ? grilly.area : `${grilly.city}, ${grilly.area}`)}</p>
+        <p>${esc(grilly.short_description || '')}</p>
+        <a href="/trucks/${esc(grilly.slug)}" class="brand-home-feature-cta">View listing <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </aside>` : ''}
   </div>
 </section>
 
@@ -142,9 +154,6 @@ module.exports = function homePage({ trucks, posts }) {
       </div>
       <a href="/directory" class="brand-home-view-all">See all ${totalTrucks} trucks <span aria-hidden="true">&rarr;</span></a>
     </div>
-    <div class="brand-home-card-grid" id="featured-truck-list">
-      ${homeTrucks.map(truckCard).join('\n      ')}
-    </div>
     ${grilly ? `<aside class="brand-sponsored-strip" aria-label="Sponsored listing">
       <span class="brand-sponsored-label">Sponsored</span>
       <div class="brand-sponsored-copy">
@@ -153,6 +162,9 @@ module.exports = function homePage({ trucks, posts }) {
       </div>
       <a href="/trucks/${esc(grilly.slug)}" class="brand-sponsored-link">View listing <span aria-hidden="true">&rarr;</span></a>
     </aside>` : ''}
+    <div class="brand-home-card-grid" id="featured-truck-list">
+      ${homeTrucks.map(truckCard).join('\n      ')}
+    </div>
   </div>
 </section>
 
