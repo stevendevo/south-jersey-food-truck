@@ -529,7 +529,8 @@ async function main() {
     about.body.includes('id="featuredTruckRail"') ||
     featuredTruck.body.includes('id="featuredTruckRail"') ||
     !home.body.includes('<aside class="brand-sponsored-strip"') ||
-    home.body.indexOf('id="featured-truck-list"') > home.body.indexOf('<aside class="brand-sponsored-strip"') ||
+    home.body.indexOf('<aside class="brand-sponsored-strip"') > home.body.indexOf('id="featured-truck-list"') ||
+    !home.body.includes('<aside class="brand-home-feature"') ||
     !home.body.includes('href="/trucks/grilly-cheese"') ||
     !home.body.includes('Grilly Cheese') ||
     !home.body.includes('id="navMobile" hidden') ||
