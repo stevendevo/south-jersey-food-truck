@@ -109,6 +109,18 @@ module.exports = function homePage({ trucks, posts }) {
         <input type="search" id="heroSearchInput" name="q" placeholder="Search trucks, cuisines, or counties" autocomplete="off" />
         <button type="submit">Start exploring <span aria-hidden="true">&rarr;</span></button>
       </form>
+    ${grilly ? `<aside class="brand-home-feature" aria-labelledby="heroFeatureTitle">
+      <span class="brand-home-feature-badge">&#9733; Featured sponsor</span>
+      <div class="brand-home-feature-image brand-truck-image-wrap">
+        ${renderTruckImage(grilly, { className: 'brand-truck-photo', width: 700, height: 390, loading: 'eager', context: `food truck serving ${grilly.cuisine} in ${grilly.city}` })}
+      </div>
+      <div class="brand-home-feature-body">
+        <h2 id="heroFeatureTitle"><a href="/trucks/${esc(grilly.slug)}">${esc(grilly.name)}</a></h2>
+        <p class="brand-home-feature-meta">${esc(grilly.cuisine || 'Food truck')} &middot; ${esc(grilly.area && grilly.area.toLowerCase().startsWith(grilly.city.toLowerCase()) ? grilly.area : `${grilly.city}, ${grilly.area}`)}</p>
+        <p>${esc(grilly.short_description || '')}</p>
+        <a href="/trucks/${esc(grilly.slug)}" class="brand-home-feature-cta">View listing <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </aside>` : ''}
       <nav class="hero-chips" aria-label="Browse food trucks by county or cuisine">
         <div class="hero-chip-group">
           <span class="hero-chip-label" id="heroCountyLabel">By county</span>
@@ -130,18 +142,6 @@ module.exports = function homePage({ trucks, posts }) {
         <div class="brand-home-stat"><strong>${cuisineCount}</strong><span>Cuisine categories</span></div>
       </div>
     </div>
-    ${grilly ? `<aside class="brand-home-feature" aria-labelledby="heroFeatureTitle">
-      <span class="brand-home-feature-badge">&#9733; Featured sponsor</span>
-      <div class="brand-home-feature-image brand-truck-image-wrap">
-        ${renderTruckImage(grilly, { className: 'brand-truck-photo', width: 700, height: 390, loading: 'eager', context: `food truck serving ${grilly.cuisine} in ${grilly.city}` })}
-      </div>
-      <div class="brand-home-feature-body">
-        <h2 id="heroFeatureTitle"><a href="/trucks/${esc(grilly.slug)}">${esc(grilly.name)}</a></h2>
-        <p class="brand-home-feature-meta">${esc(grilly.cuisine || 'Food truck')} &middot; ${esc(grilly.area && grilly.area.toLowerCase().startsWith(grilly.city.toLowerCase()) ? grilly.area : `${grilly.city}, ${grilly.area}`)}</p>
-        <p>${esc(grilly.short_description || '')}</p>
-        <a href="/trucks/${esc(grilly.slug)}" class="brand-home-feature-cta">View listing <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </aside>` : ''}
   </div>
 </section>
 
