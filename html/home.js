@@ -2,7 +2,11 @@
 const layout = require('./layout');
 const { esc, formatDateShort, hasVerifiedTruckImage, renderTruckImage, imageAsset } = require('../utils');
 const { truckEntity } = require('./truck-entity');
+const { COUNTY_SLUGS, cuisineSlugMap } = require('../taxonomy');
 
+// Cravings shown as hero chips, in this order, when at least one listing has
+// that cuisine (each links to its existing cuisine landing page).
+const HERO_CUISINE_SLUGS = ['pizza', 'tacos', 'mexican', 'bbq', 'cheesesteaks', 'seafood', 'ice-cream', 'desserts'];
 const COUNTIES = ['Camden County', 'Burlington County', 'Atlantic County', 'Cape May County', 'Gloucester County', 'Cumberland County', 'Salem County'];
 
 function truckCard(t) {
@@ -47,6 +51,13 @@ module.exports = function homePage({ trucks, posts }) {
   const totalTrucks = trucks.length;
   const localTrucks = trucks.filter(t => COUNTIES.includes(t.area)).length;
   const cuisineCount = new Set(trucks.map(t => t.cuisine).filter(Boolean)).size;
+  const heroCounties = Object.entries(COUNTY_SLUGS)
+    .map(([slug, county]) => ({ slug, label: county.replace(/ County$/, ''), count: trucks.filter(t => t.area === county).length }))
+    .filter(county => county.count > 0);
+  const cuisinePages = cuisineSlugMap(trucks);
+  const heroCuisines = HERO_CUISINE_SLUGS
+    .filter(slug => cuisinePages[slug])
+    .map(slug => ({ slug, label: cuisinePages[slug], count: trucks.filter(t => t.cuisine === cuisinePages[slug]).length }));
   const featuredTruckList = {
     '@type': 'ItemList',
     '@id': 'https://www.southjerseyfoodtruck.com/#featured-trucks',
@@ -93,11 +104,21 @@ module.exports = function homePage({ trucks, posts }) {
       <p class="brand-home-eyebrow">A better way to eat local <span aria-hidden="true">&middot;</span> NJ</p>
       <h1>Find <span>food trucks</span><br />in South Jersey.</h1>
       <p class="brand-home-lead">South Jersey&rsquo;s rolling kitchens, in one sharp little directory.</p>
-      <form class="hero-search" id="heroSearchForm" action="/directory" method="get">
-        <label class="sr-only" for="heroSearchInput">Search trucks, cuisines, or counties</label>
-        <input type="search" id="heroSearchInput" name="q" placeholder="Search trucks, cuisines, or counties" autocomplete="off" />
-        <button type="submit">Start exploring <span aria-hidden="true">&rarr;</span></button>
-      </form>
+      <nav class="hero-chips" aria-label="Browse food trucks by county or cuisine">
+        <div class="hero-chip-group">
+          <span class="hero-chip-label" id="heroCountyLabel">By county</span>
+          <ul class="hero-chip-list" aria-labelledby="heroCountyLabel">
+            ${heroCounties.map(c => `<li><a class="hero-chip" href="/${esc(c.slug)}-food-trucks">${esc(c.label)} <span class="hero-chip-count">${c.count}<span class="sr-only"> listings</span></span></a></li>`).join('\n            ')}
+          </ul>
+        </div>
+        <div class="hero-chip-group">
+          <span class="hero-chip-label" id="heroCuisineLabel">By craving</span>
+          <ul class="hero-chip-list" aria-labelledby="heroCuisineLabel">
+            ${heroCuisines.map(c => `<li><a class="hero-chip" href="/south-jersey-${esc(c.slug)}-food-trucks">${esc(c.label)}</a></li>`).join('\n            ')}
+            <li><a class="hero-chip hero-chip-all" href="/directory">All ${totalTrucks} trucks <span aria-hidden="true">&rarr;</span></a></li>
+          </ul>
+        </div>
+      </nav>
       <div class="brand-home-stats" aria-label="Directory summary">
         <div class="brand-home-stat"><strong>${totalTrucks}</strong><span>Listings</span></div>
         <div class="brand-home-stat"><strong>${COUNTIES.length}</strong><span>Counties</span></div>
@@ -203,7 +224,6 @@ module.exports = function homePage({ trucks, posts }) {
     desc: `Find food trucks in South Jersey and nearby areas. Compare ${totalTrucks} listings by county and cuisine, contact operators, and plan catering for your event.`,
     canonical: '/',
     mainEntity: 'https://www.southjerseyfoodtruck.com/#featured-trucks',
-    websiteSearchAction: true,
     jsonLd,
     bodyClass: 'brand-home',
     content
