@@ -112,7 +112,12 @@ module.exports = function homePage({ trucks, posts }) {
     ${grilly ? `<aside class="brand-home-feature" aria-labelledby="heroFeatureTitle">
       <span class="brand-home-feature-badge">&#9733; Featured sponsor</span>
       <div class="brand-home-feature-image brand-truck-image-wrap">
-        ${renderTruckImage(grilly, { className: 'brand-truck-photo', width: 700, height: 390, loading: 'eager', context: `food truck serving ${grilly.cuisine} in ${grilly.city}` })}
+        <div class="truck-image-frame">
+          <picture>
+            <source media="(max-width: 899px)" srcset="/grilly-cheese-logo.webp" width="290" height="208" />
+            <img class="brand-truck-photo" src="${esc(imageAsset(grilly.image_url).url)}" alt="Grilly Cheese food truck, serving Gourmet grilled cheese in Philadelphia" width="720" height="480" loading="eager" fetchpriority="high" decoding="async" />
+          </picture>
+        </div>
       </div>
       <div class="brand-home-feature-body">
         <h2 id="heroFeatureTitle"><a href="/trucks/${esc(grilly.slug)}">${esc(grilly.name)}</a></h2>
