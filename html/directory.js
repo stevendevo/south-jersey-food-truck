@@ -57,33 +57,35 @@ module.exports = function directoryPage({ trucks }) {
 <div class="directory-top">
   <div class="container">
     <h1 style="margin-bottom:0.75rem;">South Jersey Food Truck Directory</h1>
-    <p style="color:var(--text);line-height:1.8;max-width:720px;margin-bottom:1.5rem;">Looking for food trucks in South Jersey? You're in the right place. This directory lists ${total} mobile food operators in South Jersey and nearby areas, with county pages covering Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem. Whether you're searching for a taco truck near Haddonfield, a wood-fired pizza operation for a Burlington County wedding, or a BBQ caterer for a Cherry Hill corporate event, use the filters below to narrow by county, cuisine type, or truck name. Open each profile for available operator links and listing details. Confirm travel and date availability directly with the operator. <a href="/food-trucks-in-south-jersey">Learn more about South Jersey's food truck scene &rarr;</a></p>
 
     <div class="directory-search">
       <input type="text" id="dirSearch" aria-label="Search food trucks by name, cuisine, or city" placeholder="Search trucks, cuisines, cities&hellip;" autocomplete="off" />
     </div>
 
-    <div class="filter-row">
-      <span class="filter-label">County</span>
-      <div class="filter-btns">
-        ${COUNTIES.map(c => `<button type="button" class="filter-btn" data-county="${esc(c)}" aria-pressed="false">${esc(c.replace(' County', ''))}</button>`).join('\n        ')}
+    <details class="directory-filters" id="dirFilters" open>
+      <summary>Filter by county, cuisine or sort</summary>
+      <div class="filter-row">
+        <span class="filter-label">County</span>
+        <div class="filter-btns">
+          ${COUNTIES.map(c => `<button type="button" class="filter-btn" data-county="${esc(c)}" aria-pressed="false">${esc(c.replace(' County', ''))}</button>`).join('\n        ')}
+        </div>
       </div>
-    </div>
 
-    <div class="filter-row">
-      <span class="filter-label">Cuisine</span>
-      <div class="filter-btns">
-        ${cuisines.map(c => `<button type="button" class="filter-btn" data-cuisine="${esc(c)}" aria-pressed="false">${esc(c)}</button>`).join('\n        ')}
+      <div class="filter-row">
+        <span class="filter-label">Cuisine</span>
+        <div class="filter-btns">
+          ${cuisines.map(c => `<button type="button" class="filter-btn" data-cuisine="${esc(c)}" aria-pressed="false">${esc(c)}</button>`).join('\n        ')}
+        </div>
       </div>
-    </div>
 
-    <div class="filter-row">
-      <span class="filter-label">Sort by</span>
-      <div class="filter-btns">
-        <button type="button" class="filter-btn active" id="sortDefault" data-sort="default" aria-pressed="true">Default</button>
-        <button type="button" class="filter-btn" id="sortVerified" data-sort="recently-verified" aria-pressed="false">Recently Verified</button>
+      <div class="filter-row">
+        <span class="filter-label">Sort by</span>
+        <div class="filter-btns">
+          <button type="button" class="filter-btn active" id="sortDefault" data-sort="default" aria-pressed="true">Default</button>
+          <button type="button" class="filter-btn" id="sortVerified" data-sort="recently-verified" aria-pressed="false">Recently Verified</button>
+        </div>
       </div>
-    </div>
+    </details>
     <div class="directory-filter-actions">
       <button type="button" class="directory-clear-filters" id="clearDirFilters" hidden>Clear filters</button>
       <button type="button" class="directory-copy-link" id="copyDirLink" hidden>Copy filtered link</button>
@@ -96,10 +98,22 @@ module.exports = function directoryPage({ trucks }) {
   </div>
 </div>
 
+<div class="container" style="padding-top:1.5rem;padding-bottom:4rem;">
+  <p class="directory-count" id="dirCount">${total} trucks found</p>
+  <div class="truck-grid" id="truckGrid">
+    ${trucks.map(truckCard).join('\n    ')}
+    <div class="no-results hidden" id="noResults">No trucks match your search. Try different keywords or reset filters.</div>
+  </div>
+</div>
+
+<div class="container directory-about">
+  <p style="color:var(--text);line-height:1.8;max-width:720px;margin-bottom:1.5rem;">Looking for food trucks in South Jersey? You're in the right place. This directory lists ${total} mobile food operators in South Jersey and nearby areas, with county pages covering Camden, Burlington, Gloucester, Atlantic, Cape May, Cumberland, and Salem. Whether you're searching for a taco truck near Haddonfield, a wood-fired pizza operation for a Burlington County wedding, or a BBQ caterer for a Cherry Hill corporate event, use the search box or filters above to narrow by county, cuisine type, or truck name. Open each profile for available operator links and listing details. Confirm travel and date availability directly with the operator. <a href="/food-trucks-in-south-jersey">Learn more about South Jersey's food truck scene &rarr;</a></p>
+</div>
+
 <section class="directory-browse-links" aria-labelledby="directory-browse-heading">
   <div class="container">
     <h2 id="directory-browse-heading">Browse South Jersey food trucks by place</h2>
-    <p>Use the filters above for a quick search, or open a dedicated directory page for a county or city.</p>
+    <p>Use the search box and filters above for a quick search, or open a dedicated directory page for a county or city.</p>
     <div class="directory-link-groups">
       <div>
         <h3>Counties</h3>
@@ -128,14 +142,6 @@ ${grilly ? `<div class="container" style="padding-top:2rem;">
     <a href="/trucks/grilly-cheese" class="dir-sponsor-cta">View Listing &rarr;</a>
   </div>
 </div>` : ''}
-
-<div class="container" style="padding-top:1.5rem;padding-bottom:4rem;">
-  <p class="directory-count" id="dirCount">${total} trucks found</p>
-  <div class="truck-grid" id="truckGrid">
-    ${trucks.map(truckCard).join('\n    ')}
-    <div class="no-results hidden" id="noResults">No trucks match your search. Try different keywords or reset filters.</div>
-  </div>
-</div>
 
 <div class="cta-band">
   <div class="container">

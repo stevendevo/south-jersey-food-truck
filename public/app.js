@@ -142,6 +142,16 @@ function toggleNav() {
 
   if (!searchInput) return;
 
+  // On phones, start with the filters collapsed so the results are the first thing
+  // visible. Keep them open when a filter is already applied (shared or bookmarked link).
+  var filtersPanel = document.getElementById('dirFilters');
+  if (filtersPanel && window.matchMedia && window.matchMedia('(max-width: 700px)').matches) {
+    var initialParams = new URLSearchParams(window.location.search);
+    if (!['county', 'cuisine', 'sort'].some(function (key) { return initialParams.has(key); })) {
+      filtersPanel.open = false;
+    }
+  }
+
   var activeCounty = '';
   var activeCuisine = '';
   var activeSort = 'default';
