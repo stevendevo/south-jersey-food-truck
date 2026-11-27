@@ -1112,7 +1112,7 @@ body.brand-home .assistant-send {
   }
 
   body.brand-home .brand-home-hero {
-    padding: 52px 0 54px;
+    padding: 28px 0 40px;
   }
 
   body.brand-home .brand-home-hero::after {
@@ -1310,46 +1310,65 @@ body.brand-home .assistant-send {
   }
 }
 
-/* Homepage featured sponsor card, beside the hero copy on wide screens */
+/* Homepage featured sponsor card. Phones: compact row between the search box and
+   the county chips, sized to fit above the fold. Wide screens: full card beside the copy. */
 body.brand-home .brand-home-hero-inner {
   display: grid;
   gap: 48px;
   align-items: center;
 }
 
-@media (min-width: 900px) {
-  body.brand-home .brand-home-hero-inner {
-    grid-template-columns: minmax(0, 1fr) 340px;
-  }
-}
-
 body.brand-home .brand-home-feature {
   position: relative;
-  max-width: 340px;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  align-items: center;
+  margin: 0 0 22px;
   border: 1px solid rgba(215, 243, 107, 0.22);
   border-radius: 10px;
   background: #fff;
   color: var(--brand-ink);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
 body.brand-home .brand-home-feature-badge {
-  position: absolute;
-  z-index: 1;
-  top: 12px;
-  left: 12px;
-  padding: 5px 10px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: start;
+  margin: 9px 10px 0;
+  padding: 3px 8px;
   border-radius: 999px;
   background: var(--brand-coral);
   color: #fff;
-  font: 600 11px/1.2 "Space Grotesk", sans-serif;
+  font: 600 10px/1.2 "Space Grotesk", sans-serif;
+  white-space: nowrap;
 }
 
 body.brand-home .brand-home-feature-image {
-  height: 190px;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  position: relative;
+  align-self: stretch;
+  height: auto;
+  min-height: 96px;
   overflow: hidden;
   background: var(--brand-paper-2);
+}
+
+body.brand-home .brand-home-feature-image .truck-image-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body.brand-home .brand-home-feature-image .brand-truck-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 body.brand-home .brand-home-feature .truck-image-label {
@@ -1357,13 +1376,16 @@ body.brand-home .brand-home-feature .truck-image-label {
 }
 
 body.brand-home .brand-home-feature-body {
-  padding: 16px 18px 18px;
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  padding: 4px 12px 10px 10px;
 }
 
 body.brand-home .brand-home-feature h2 {
-  margin: 0 0 4px;
-  font-size: 22px;
-  line-height: 1.15;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.2;
 }
 
 body.brand-home .brand-home-feature h2 a {
@@ -1372,29 +1394,101 @@ body.brand-home .brand-home-feature h2 a {
 }
 
 body.brand-home .brand-home-feature-meta {
-  margin: 0 0 8px;
+  margin: 2px 0 4px;
+  overflow: hidden;
   color: var(--brand-muted);
-  font: 500 11px/1.4 "DM Mono", monospace;
-  letter-spacing: 0.04em;
+  font: 500 10px/1.4 "DM Mono", monospace;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-body.brand-home .brand-home-feature p {
-  margin: 0 0 12px;
-  color: #2b3348;
-  font-size: 14px;
-  line-height: 1.55;
+body.brand-home .brand-home-feature p:not(.brand-home-feature-meta) {
+  display: none;
 }
 
 body.brand-home .brand-home-feature-cta {
   color: var(--brand-coral-dark);
-  font: 600 13px/1.2 "Space Grotesk", sans-serif;
+  font: 600 12px/1.2 "Space Grotesk", sans-serif;
   text-decoration: none;
 }
 
 body.brand-home .brand-home-feature-cta:hover,
 body.brand-home .brand-home-feature h2 a:hover {
   text-decoration: underline;
+}
+
+@media (min-width: 900px) {
+  body.brand-home .brand-home-hero-inner {
+    display: block;
+  }
+
+  body.brand-home .brand-home-feature {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    display: block;
+    width: 340px;
+    margin: 0;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  body.brand-home .brand-home-feature-badge {
+    position: absolute;
+    z-index: 1;
+    top: 12px;
+    left: 12px;
+    margin: 0;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  body.brand-home .brand-home-feature-image {
+    height: 190px;
+    min-height: 0;
+    align-self: auto;
+  }
+
+  body.brand-home .brand-home-feature-image .truck-image-frame,
+  body.brand-home .brand-home-feature-image .brand-truck-photo {
+    position: static;
+    inset: auto;
+  }
+
+  body.brand-home .brand-home-feature-image .brand-truck-photo {
+    display: block;
+    height: 190px;
+  }
+
+  body.brand-home .brand-home-feature-body {
+    padding: 16px 18px 18px;
+  }
+
+  body.brand-home .brand-home-feature h2 {
+    margin: 0 0 4px;
+    font-size: 22px;
+  }
+
+  body.brand-home .brand-home-feature-meta {
+    margin: 0 0 8px;
+    overflow: visible;
+    font-size: 11px;
+    white-space: normal;
+  }
+
+  body.brand-home .brand-home-feature p:not(.brand-home-feature-meta) {
+    display: block;
+    margin: 0 0 12px;
+    color: #2b3348;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  body.brand-home .brand-home-feature-cta {
+    font-size: 13px;
+  }
 }
 
 /* Search box keeps the headline's left edge on desktop */
