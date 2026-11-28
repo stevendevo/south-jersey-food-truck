@@ -109,23 +109,31 @@ module.exports = function homePage({ trucks, posts }) {
         <input type="search" id="heroSearchInput" name="q" placeholder="Search trucks, cuisines, or counties" autocomplete="off" />
         <button type="submit">Start exploring <span aria-hidden="true">&rarr;</span></button>
       </form>
-    ${grilly ? `<aside class="brand-home-feature" aria-labelledby="heroFeatureTitle">
-      <span class="brand-home-feature-badge">&#9733; Featured sponsor</span>
-      <div class="brand-home-feature-image brand-truck-image-wrap">
-        <div class="truck-image-frame">
-          <picture>
-            <source media="(max-width: 899px)" srcset="/grilly-cheese-logo.webp" width="290" height="208" />
-            <img class="brand-truck-photo" src="${esc(imageAsset(grilly.image_url).url)}" alt="Grilly Cheese food truck, serving Gourmet grilled cheese in Philadelphia" width="720" height="480" loading="eager" fetchpriority="high" decoding="async" />
-          </picture>
+      ${grilly ? `<aside class="brand-home-feature" aria-labelledby="heroFeatureTitle">
+        <a href="/trucks/${esc(grilly.slug)}" class="brand-home-feature-compact">
+          <img class="brand-home-feature-logo" src="/brand/grilly-cheese-logo.webp" alt="Grilly Cheese logo" width="47" height="33" decoding="async" />
+          <span class="brand-home-feature-compact-text">
+            <small>Featured sponsor</small>
+            <strong>View ${esc(grilly.name)} <span aria-hidden="true">&rarr;</span></strong>
+          </span>
+        </a>
+        <span class="brand-home-feature-badge">&#9733; Featured sponsor</span>
+        <div class="brand-home-feature-image brand-truck-image-wrap">
+          <div class="truck-image-frame">
+            <picture>
+              <!-- Phones show the compact bar instead, so give them a 1px placeholder rather than the photo. -->
+              <source media="(max-width: 899px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+              <img class="brand-truck-photo" src="${esc(imageAsset(grilly.image_url).url)}" alt="Grilly Cheese food truck, serving Gourmet grilled cheese in Philadelphia" width="720" height="480" loading="eager" fetchpriority="high" decoding="async" />
+            </picture>
+          </div>
         </div>
-      </div>
-      <div class="brand-home-feature-body">
-        <h2 id="heroFeatureTitle"><a href="/trucks/${esc(grilly.slug)}">${esc(grilly.name)}</a></h2>
-        <p class="brand-home-feature-meta">${esc(grilly.cuisine || 'Food truck')} &middot; ${esc(grilly.area && grilly.area.toLowerCase().startsWith(grilly.city.toLowerCase()) ? grilly.area : `${grilly.city}, ${grilly.area}`)}</p>
-        <p>${esc(grilly.short_description || '')}</p>
-        <a href="/trucks/${esc(grilly.slug)}" class="brand-home-feature-cta">View listing <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </aside>` : ''}
+        <div class="brand-home-feature-body">
+          <h2 id="heroFeatureTitle"><a href="/trucks/${esc(grilly.slug)}">${esc(grilly.name)}</a></h2>
+          <p class="brand-home-feature-meta">${esc(grilly.cuisine || 'Food truck')} &middot; ${esc(grilly.area && grilly.area.toLowerCase().startsWith(grilly.city.toLowerCase()) ? grilly.area : `${grilly.city}, ${grilly.area}`)}</p>
+          <p>${esc(grilly.short_description || '')}</p>
+          <a href="/trucks/${esc(grilly.slug)}" class="brand-home-feature-cta">View listing <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </aside>` : ''}
       <nav class="hero-chips" aria-label="Browse food trucks by county or cuisine">
         <div class="hero-chip-group">
           <span class="hero-chip-label" id="heroCountyLabel">By county</span>
