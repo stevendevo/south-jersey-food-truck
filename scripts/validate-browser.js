@@ -78,6 +78,22 @@ async function checkMobileInteractions(page) {
   await menuToggle.click();
   assert.equal(await menuToggle.getAttribute('aria-expanded'), 'true', 'mobile navigation announces open state');
   assert.ok(await menu.isVisible(), 'mobile navigation opens');
+  // The panel must contain its links and sit above the page: an old fixed-position
+  // rule once collapsed it to the 72px header so the links spilled over the content.
+  const menuLayout = await menu.evaluate(panel => {
+    const box = panel.getBoundingClientRect();
+    const links = Array.from(panel.querySelectorAll('a')).map(link => {
+      const rect = link.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + 12, rect.top + rect.height / 2);
+      return { text: link.textContent.trim(), inside: rect.bottom <= box.bottom + 1, tappable: link === hit || link.contains(hit) };
+    });
+    return { height: box.height, links };
+  });
+  assert.ok(menuLayout.height > 150, `mobile menu panel is only ${Math.round(menuLayout.height)}px tall`);
+  for (const link of menuLayout.links) {
+    assert.ok(link.inside, `mobile menu link "${link.text}" spills outside the menu panel`);
+    assert.ok(link.tappable, `mobile menu link "${link.text}" is covered by page content`);
+  }
   await page.keyboard.press('Escape');
   assert.equal(await menuToggle.getAttribute('aria-expanded'), 'false', 'Escape announces closed state');
   assert.equal(await menu.isVisible(), false, 'Escape closes mobile navigation');
